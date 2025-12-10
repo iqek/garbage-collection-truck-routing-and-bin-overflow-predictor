@@ -1,0 +1,152 @@
+# ============================================================================
+# CSE 211 - Data Structures Term Project
+# Clang-Format Configuration
+# ============================================================================
+# Usage: Place this file as '.clang-format' in your project root
+# Run: clang-format -i src/*.cpp include/*.hpp
+# ============================================================================
+
+# Base style (Google is clean and widely used)
+BasedOnStyle: Google
+
+# Language
+Language: Cpp
+Standard: c++17
+
+# ============================================================================
+# Indentation
+# ============================================================================
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+IndentCaseLabels: true
+IndentCaseBlocks: false
+NamespaceIndentation: None
+IndentPPDirectives: BeforeHash
+
+# ============================================================================
+# Line Length & Wrapping
+# ============================================================================
+ColumnLimit: 100
+ReflowComments: true
+
+# ============================================================================
+# Braces
+# ============================================================================
+BreakBeforeBraces: Attach
+# Attach: if (x) {
+# Allman: if (x)
+#         {
+
+# ============================================================================
+# Alignment
+# ============================================================================
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Left
+AlignOperands: true
+AlignTrailingComments: true
+
+# ============================================================================
+# Function & Parameters
+# ============================================================================
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortLambdasOnASingleLine: All
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: true
+BinPackParameters: true
+
+# ============================================================================
+# Breaks
+# ============================================================================
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeColon
+BreakInheritanceList: BeforeColon
+BreakStringLiterals: true
+
+# ============================================================================
+# Spaces
+# ============================================================================
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 2
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# ============================================================================
+# Pointers & References
+# ============================================================================
+DerivePointerAlignment: false
+PointerAlignment: Left
+# Left:   int* ptr
+# Right:  int *ptr
+# Middle: int * ptr
+
+# ============================================================================
+# Includes
+# ============================================================================
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Project headers (quoted)
+  - Regex: '^".*"'
+    Priority: 1
+  # System headers
+  - Regex: '^<.*>'
+    Priority: 2
+
+# ============================================================================
+# Classes & Access Modifiers
+# ============================================================================
+AccessModifierOffset: -4
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+
+# ============================================================================
+# Constructors
+# ============================================================================
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 4
+PackConstructorInitializers: BinPack
+
+# ============================================================================
+# Other
+# ============================================================================
+Cpp11BracedListStyle: true
+FixNamespaceComments: true
+MaxEmptyLinesToKeep: 1
+SortUsingDeclarations: true
+CompactNamespaces: false
+
+# ============================================================================
+# Penalties (for line breaking decisions)
+# ============================================================================
+PenaltyBreakAssignment: 2
+PenaltyBreakBeforeFirstCallParameter: 1
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakString: 1000
+PenaltyBreakTemplateDeclaration: 10
+PenaltyExcessCharacter: 1000000
+PenaltyReturnTypeOnItsOwnLine: 200
