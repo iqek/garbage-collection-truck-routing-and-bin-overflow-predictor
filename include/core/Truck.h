@@ -2,10 +2,11 @@
  * @file Truck.h
  * @brief Garbage collection truck and its basic operations.
  * @author Miray Duygulu, Kerem Akdeniz, İlber Eren Tüt, İrem Irmak Ünlüer, İpek Çelik
- * @date 2025-12-15
+ * @date 2025-12-23
  */
 
 #pragma once
+#include <string>
 
 namespace project {
 
@@ -17,6 +18,7 @@ namespace project {
  */
 class Truck {
 private:
+    std::string id;
     int capacity;
     int load;
     int currentNode;
@@ -24,10 +26,17 @@ private:
 public:
     /**
      * @brief Constructs a truck instance.
+     * @param id Unique truck identifier (e.g., "T1").
      * @param capacity Maximum carrying capacity.
-     * @param startNode The initial location (Depot node index).
+     * @param initialLoad Initial load amount.
+     * @param startNode The initial location (node index).
      */
-    Truck(int capacity, int startNode);
+    Truck(const std::string& id, int capacity, int initialLoad, int startNode);
+
+    /**
+     * @brief Default constructor for initialization.
+     */
+    Truck();
 
     /**
      * @brief Moves the truck to a specified node.
@@ -44,8 +53,28 @@ public:
      */
     void collect(int amount);
 
-    // Getter methods...
+    /**
+     * @brief Empties the truck's load at a disposal facility.
+     * @post The truck's `load` is set to 0.
+     */
+    void unload();
+
+    /**
+     * @brief Gets remaining capacity in the truck.
+     * @return Available capacity (capacity - load).
+     */
+    int getRemainingCapacity() const;
+
+    /**
+     * @brief Checks if truck is full.
+     * @return true if load >= capacity.
+     */
+    bool isFull() const;
+
+    // Getter methods
+    std::string getId() const;
     int getLoad() const;
+    int getCapacity() const;
     int getCurrentNode() const;
 };
 

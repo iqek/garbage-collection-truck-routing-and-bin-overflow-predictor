@@ -2,7 +2,7 @@
  * @file JsonParser.h
  * @brief Parses input files in JSON format.
  * @author Miray Duygulu, Kerem Akdeniz, İlber Eren Tüt, İrem Irmak Ünlüer, İpek Çelik
- * @date 2025-12-15
+ * @date 2025-12-23
  */
 
 #pragma once
@@ -10,18 +10,44 @@
 #include "Graph.h"
 #include "Bin.h"
 #include "Truck.h"
+#include "Facility.h"
+#include "LocationMapper.h"
 
 namespace project {
 
 /**
  * @brief JSON file parser for simulation configuration and initial data.
  *
- * Responsible for reading the initial state of the city graph, garbage bins,
- * and truck configuration from a JSON file path.
+ * Responsible for reading the initial state from JSON, including the city graph,
+ * garbage bins, truck configuration, and facilities. Handles string ID to 
+ * integer node ID conversion using LocationMapper.
  */
 class JsonParser {
 private:
     const char* dataPath;
+    LocationMapper mapper;
+
+    /**
+     * @brief Helper to read entire file into string.
+     * @return File contents as string.
+     */
+    std::string readFile() const;
+
+    /**
+     * @brief Extracts string value from JSON for a given key.
+     * @param json The JSON string.
+     * @param key The key to search for.
+     * @return The value string, or empty if not found.
+     */
+    std::string extractString(const std::string& json, const std::string& key) const;
+
+    /**
+     * @brief Extracts integer value from JSON for a given key.
+     * @param json The JSON string.
+     * @param key The key to search for.
+     * @return The integer value, or 0 if not found.
+     */
+    int extractInt(const std::string& json, const std::string& key) const;
 
 public:
     /**
@@ -32,24 +58,49 @@ public:
 
     /**
      * @brief Loads and constructs the city graph from the JSON file.
-     * @post A new `Graph` object is created and populated with nodes and edges.
+     * 
+     * First pass: reads bins and facilities to build location mappings.
+     * Second pass: reads edges and converts string IDs to node indices.
+     * @post Graph is populated with nodes and weighted edges.
      * @return The loaded `Graph` object.
      */
     Graph loadGraph();
 
     /**
-     * @brief Loads and constructs the array of garbage bins from the JSON file.
+     * @brief Loads and constructs the array of garbage bins from JSON.
+     * 
+     * Bins are assigned node IDs based on their location strings.
      * @param count Reference to store the total number of bins loaded.
-     * @post The `count` variable is updated with the number of bins loaded.
-     * @return A dynamically allocated array (`Bin*`) of loaded `Bin` objects.
+     * @post The `count` variable is updated with the number of bins.
+     * @return Dynamically allocated array of `Bin` objects.
      */
     Bin* loadBins(int& count);
     
     /**
-     * @brief Loads and constructs the truck object from the JSON file.
+     * @brief Loads and constructs the truck object from JSON.
+     * 
+     * Truck position string is converted to node ID using mapper.
      * @return The loaded `Truck` object.
      */
     Truck loadTruck();
+
+    /**
+     * @brief Loads and constructs facilities array from JSON.
+     * 
+     * Facilities include depots and disposal sites with coordinates.
+     * @param count Reference to store the total number of facilities loaded.
+     * @post The `count` variable is updated with facility count.
+     * @return Dynamically allocated array of `Facility` objects.
+     */
+    Facility* loadFacilities(int& count);
+
+    /**
+     * @brief Gets reference to the location mapper.
+     * 
+     * Useful for debugging or querying location-to-node mappings.
+     * @return Reference to internal LocationMapper.
+     */
+    LocationMapper& getMapper();
 };
 
 } // namespace project

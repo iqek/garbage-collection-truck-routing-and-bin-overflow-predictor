@@ -2,7 +2,7 @@
  * @file Graph.h
  * @brief Represents the city map as a weighted graph using adjacency lists.
  * @author Miray Duygulu, Kerem Akdeniz, İlber Eren Tüt, İrem Irmak Ünlüer, İpek Çelik
- * @date 2025-12-15
+ * @date 2025-12-23
  */
 
 #pragma once
@@ -20,6 +20,9 @@ namespace project {
 struct Edge {
     int toNode;    ///< Index of the destination node the edge connects to.
     int weight;    ///< The weight or distance of the edge.
+    
+    Edge() : toNode(0), weight(0) {}
+    Edge(int to, int w) : toNode(to), weight(w) {}
 };
 
 /**
@@ -48,6 +51,16 @@ public:
     ~Graph();
 
     /**
+     * @brief Copy constructor.
+     */
+    Graph(const Graph& other);
+
+    /**
+     * @brief Assignment operator.
+     */
+    Graph& operator=(const Graph& other);
+
+    /**
      * @brief Adds a weighted edge between two nodes.
      * @param from Source node index.
      * @param to Destination node index.
@@ -58,12 +71,27 @@ public:
     void addEdge(int from, int to, int weight);
 
     /**
+     * @brief Adds a bidirectional edge (adds edge in both directions).
+     * @param node1 First node.
+     * @param node2 Second node.
+     * @param weight The weight/distance of the edge.
+     */
+    void addBidirectionalEdge(int node1, int node2, int weight);
+
+    /**
      * @brief Returns the adjacency list for a specific node.
      * @param node The index of the node whose list is requested.
      * @pre `node` index must be valid (0 <= node < nodeCount).
      * @return Reference to the linked list containing `Edge` structures.
      */
     LinkedList<Edge>& getAdjList(int node); 
+
+    /**
+     * @brief Returns the adjacency list for a specific node (const version).
+     * @param node The index of the node.
+     * @return Const reference to the adjacency list.
+     */
+    const LinkedList<Edge>& getAdjList(int node) const;
 
     /**
      * @brief Returns the total number of nodes in the graph.
