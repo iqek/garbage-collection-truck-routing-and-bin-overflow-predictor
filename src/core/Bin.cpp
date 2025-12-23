@@ -1,5 +1,5 @@
 /**
- * @file Bin.h
+ * @file Bin.cpp
  * @brief Represents a garbage bin in the city.
  * @author Miray Duygulu
  * @date 2025-12-23
