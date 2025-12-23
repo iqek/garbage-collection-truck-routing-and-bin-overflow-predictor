@@ -1,0 +1,17 @@
+{
+  "bins": [
+    {"id": "B1", "location": "Market", "capacity": 500, "current_fill": 450, "fill_rate": 20}
+  ],
+  "trucks": [
+    {"id": "T1", "capacity": 200, "current_load": 0, "position": "Depot"}
+  ],
+  "facilities": [
+    {"id": "Depot", "type": "depot", "x": 0, "y": 0},
+    {"id": "Dump1", "type": "disposal", "x": 10, "y": 10}
+  ],
+  "edges": [
+    {"from": "Depot", "to": "Market", "distance": 5},
+    {"from": "Market", "to": "Dump1", "distance": 5},
+    {"from": "Dump1", "to": "Market", "distance": 5}
+  ]
+}
