@@ -1,0 +1,20 @@
+{
+  "bins": [
+    {"id": "B1", "location": "Metro", "capacity": 200, "current_fill": 150, "fill_rate": 40},
+    {"id": "B2", "location": "School", "capacity": 100, "current_fill": 0, "fill_rate": 6},
+    {"id": "B3", "location": "Library", "capacity": 100, "current_fill": 0, "fill_rate": 3}
+  ],
+  "trucks": [ 
+    {"id": "T1", "capacity": 500, "current_load": 0, "position": "Depot"} 
+  ],
+  "facilities": [
+    {"id": "Depot", "type": "depot", "x": 0, "y": 0},
+    {"id": "Dump1", "type": "disposal", "x": 50, "y": 0}
+  ],
+  "edges": [
+    {"from": "Depot", "to": "B2", "distance": 1}, 
+    {"from": "B2", "to": "B3", "distance": 1},
+    {"from": "B3", "to": "B1", "distance": 40}, 
+    {"from": "B1", "to": "Dump1", "distance": 2}
+  ]
+}
