@@ -1,3 +1,9 @@
+/**
+ * @file RoutePlanner.cpp
+ * @brief Implementation of RoutePlanner class.
+ * @author Miray Duygulu
+ * @date 2025-12-27
+ */
 #include "RoutePlanner.h"
 
 // Programda overflow kontrolü yapmak için başlangıç değerlerini çok küçük ya da çok büyük vermek için include ettik 
