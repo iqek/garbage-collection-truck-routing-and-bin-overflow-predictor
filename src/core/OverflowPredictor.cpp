@@ -1,5 +1,9 @@
-
-
+/**
+ * @file OwerflowPredictor.cpp
+ * @brief Implementation of OwerflowPredictor class.
+ * @author Miray Duygulu
+ * @date 2025-12-27
+ */
 #include "OverflowPredictor.h"
 
 namespace project {
