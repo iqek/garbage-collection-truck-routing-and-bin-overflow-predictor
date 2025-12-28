@@ -34,6 +34,11 @@ public:
              int x, int y, int nodeId);
 
     /**
+     * @brief Default constructor (needed for array allocation).
+     */
+    Facility();
+
+    /**
      * @brief Checks if this is a depot facility.
      * @return true if type is "depot".
      */

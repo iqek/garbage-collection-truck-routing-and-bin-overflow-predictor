@@ -2,7 +2,7 @@
  * @file JsonParser.h
  * @brief Parses input files in JSON format.
  * @author Miray Duygulu, Kerem Akdeniz, İlber Eren Tüt, İrem Irmak Ünlüer, İpek Çelik
- * @date 2025-12-23
+ * @date 2025-12-26
  */
 
 #pragma once
@@ -12,6 +12,7 @@
 #include "Truck.h"
 #include "Facility.h"
 #include "LocationMapper.h"
+#include <string>
 
 namespace project {
 
@@ -35,7 +36,7 @@ private:
 
     /**
      * @brief Extracts string value from JSON for a given key.
-     * @param json The JSON string.
+     * @param json The JSON string or substring.
      * @param key The key to search for.
      * @return The value string, or empty if not found.
      */
@@ -43,11 +44,27 @@ private:
 
     /**
      * @brief Extracts integer value from JSON for a given key.
-     * @param json The JSON string.
+     * @param json The JSON string or substring.
      * @param key The key to search for.
      * @return The integer value, or 0 if not found.
      */
     int extractInt(const std::string& json, const std::string& key) const;
+
+    /**
+     * @brief Finds a JSON array within the file content.
+     * @param json The JSON string.
+     * @param arrayName The name of the array (e.g., "bins", "facilities").
+     * @return The array content as a string, or empty if not found.
+     */
+    std::string findArray(const std::string& json, const std::string& arrayName) const;
+
+    /**
+     * @brief Extracts individual JSON objects from an array string.
+     * @param arrayContent The array content (inside [ ]).
+     * @param count Output parameter for number of objects found.
+     * @return Array of strings, each containing one JSON object.
+     */
+    std::string* extractObjects(const std::string& arrayContent, int& count) const;
 
 public:
     /**
@@ -97,7 +114,7 @@ public:
     /**
      * @brief Gets reference to the location mapper.
      * 
-     * Useful for debugging or querying location-to-node mappings.
+     * Useful for debugging or querying location-to-node mappings after parsing.
      * @return Reference to internal LocationMapper.
      */
     LocationMapper& getMapper();

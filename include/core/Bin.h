@@ -38,6 +38,11 @@ public:
         int currentFill, int fillRate, int nodeId);
 
     /**
+     * @brief Default constructor (needed for array allocation).
+     */
+    Bin();
+
+    /**
      * @brief Updates the fill level for one time step (day).
      * @post The `currentFill` amount is increased by `fillRate`, capped at `capacity`.
      */
