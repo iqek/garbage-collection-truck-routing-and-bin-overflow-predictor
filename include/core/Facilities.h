@@ -65,7 +65,7 @@ public:
      * @pre `index` must be a valid index (0 <= index < binCount).
      * @return Reference to the requested `Bin` object.
      */
-    Bin& getBin(int index);
+    Bin& getBin(int index) const;
 
     /**
      * @brief Returns the total number of bins.
