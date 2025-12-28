@@ -9,7 +9,7 @@
 
 #include "Graph.h"
 #include "Facilities.h"
-#include "PriorityQueue.h"
+#include "PriorityQueue.hpp"
 #include "OverflowPredictor.h"
 #include "Route.h"
 
