@@ -9,7 +9,7 @@
 
 #include "Graph.h"
 #include "Facilities.h"
-#include "PriorityQueue.h"
+#include "PriorityQueue.hpp"
 #include "OverflowPredictor.h"
 #include "Route.h"
 
@@ -52,7 +52,7 @@ public:
      * @param facilities The system's physical facilities and assets.
      * @return Route object containing sequence of bins to visit.
      */
-    Route planRoute(const Facilities& facilities);
+    Route planRoute(Facilities& facilities);
 
     /**
      * @brief Selects the next single bin for the truck to visit.
@@ -61,7 +61,7 @@ public:
      * @param facilities The system's physical facilities and assets.
      * @return The index of the selected bin. Returns -1 if no bin needs collection.
      */
-    int selectNextBin(const Facilities& facilities);
+    int selectNextBin(Facilities& facilities);
 
     /**
      * @brief Finds the nearest disposal facility from current location.
