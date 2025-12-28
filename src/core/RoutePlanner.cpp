@@ -106,7 +106,7 @@ bool RoutePlanner::hasCriticalBins(const Facilities& facilities) const {
 }
 
 // Select next bin (greedy)
-int RoutePlanner::selectNextBin(const Facilities& facilities) {
+int RoutePlanner::selectNextBin(Facilities& facilities) {
     Truck& truck = facilities.getTruck();   //Facilities içindeki truck’a referans alır (no copy)
     int currentNode = truck.getCurrentNode();   //Truck’ın graph üzerindeki mevcut konumu
 
@@ -131,7 +131,7 @@ int RoutePlanner::selectNextBin(const Facilities& facilities) {
 }
 
 // Plan full route
-Route RoutePlanner::planRoute(const Facilities& facilities) {
+Route RoutePlanner::planRoute(Facilities& facilities) {
     Route route;    // Initialize an empty route
     Truck& truck = facilities.getTruck();
 
