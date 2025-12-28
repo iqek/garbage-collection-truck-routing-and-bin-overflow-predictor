@@ -2,7 +2,7 @@
  * @file RoutePlanner.cpp
  * @brief Implementation of RoutePlanner class.
  * @author Miray Duygulu
- * @date 2025-12-27
+ * @date 2025-12-28
  */
 #include "RoutePlanner.h"
 
@@ -51,8 +51,8 @@ int RoutePlanner::computeDistance(int from, int to) const {
         if (current == to) break;           // break if the target node is reached 
 
         const LinkedList<Edge>& edges = graph.getAdjList(current);  //current node’unun tüm komşu kenarları
-        for (int i = 0; i < edges.size(); i++) {        //current node’dan çıkan her kenar tek tek incelenir
-            Edge e = edges.at(i);
+        for (auto it = edges.begin(); it != edges.end(); ++it) {        //current node’dan çıkan her kenar tek tek incelenir
+            Edge e = *it;
             int next = e.toNode;    //gidilecek komşu node
             int weight = e.weight;  //next ile arasındaki mesafe
 
@@ -108,7 +108,7 @@ bool RoutePlanner::hasCriticalBins(const Facilities& facilities) const {
 // Select next bin (greedy)
 int RoutePlanner::selectNextBin(Facilities& facilities) {
     Truck& truck = facilities.getTruck();   //Facilities içindeki truck’a referans alır (no copy)
-    int currentNode = truck.moveTo();   //Truck’ın graph üzerindeki mevcut konumu
+    int currentNode = truck.getCurrentNode();   //Truck’ın graph üzerindeki mevcut konumu
 
     double bestScore = INT_MAX;
     int bestIndex = -1;
