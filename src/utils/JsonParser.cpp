@@ -18,40 +18,40 @@ JsonParser::JsonParser(const char* path) : dataPath(path) {
 
 // Read entire file into string
 std::string JsonParser::readFile() const {
-    std::ifstream file(dataPath);
+    std::ifstream file(dataPath);  //dataPath'teki dosyayı aç
     if (!file.is_open()) {
         std::cerr << "Error: Could not open file " << dataPath << std::endl;
         return "";
     }
     
     std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
+    buffer << file.rdbuf();  //dosyayı oku buffer'da sakla
+    return buffer.str();  //buffer'daki içeriği string olarak al
 }
 
 // Extract string value from JSON
 std::string JsonParser::extractString(const std::string& json, const std::string& key) const {
-    std::string searchKey = "\"" + key + "\":";
-    size_t pos = json.find(searchKey);
+    std::string searchKey = "\"" + key + "\":";  //"key"
+    size_t pos = json.find(searchKey); //ilk " indexi. ör:"id"nin ilk tırnağına geldik
     
-    if (pos == std::string::npos) {
+    if (pos == std::string::npos) {  //bulunamadı anlamına geliyor
         return "";
     }
     
     // Find opening quote
-    size_t start = json.find("\"", pos + searchKey.length());
+    size_t start = json.find("\"", pos + searchKey.length());  //"key"den sonraki ilk tırnak ex:"B1"in ilk tırnağına geldik
     if (start == std::string::npos) {
         return "";
     }
-    start++; // Move past the quote
+    start++; // Move past the quote. ex:B'ye geldik
     
     // Find closing quote
-    size_t end = json.find("\"", start);
+    size_t end = json.find("\"", start);  //ex: B1"in kapanış tırnağını bulduk
     if (end == std::string::npos) {
         return "";
     }
     
-    return json.substr(start, end - start);
+    return json.substr(start, end - start); //ex: B1 döndürür
 }
 
 // Extract integer value from JSON
@@ -64,15 +64,15 @@ int JsonParser::extractInt(const std::string& json, const std::string& key) cons
     }
     
     // Skip to after the colon and any whitespace
-    size_t start = pos + searchKey.length();
+    size_t start = pos + searchKey.length(); //
     while (start < json.length() && (json[start] == ' ' || json[start] == '\t')) {
-        start++;
+        start++;  //sayının ilk basamağına geldik
     }
     
     // Extract number
     std::string numStr;
-    while (start < json.length() && (isdigit(json[start]) || json[start] == '-')) {
-        numStr += json[start];
+    while (start < json.length() && (isdigit(json[start]) || json[start] == '-')) {  //rakamlar bitene kadar
+        numStr += json[start];  //sayıyı string olarak kaydet
         start++;
     }
     
@@ -80,7 +80,7 @@ int JsonParser::extractInt(const std::string& json, const std::string& key) cons
         return 0;
     }
     
-    return std::stoi(numStr);
+    return std::stoi(numStr);  //string to integer
 }
 
 // Find a JSON array
@@ -119,50 +119,50 @@ std::string JsonParser::findArray(const std::string& json, const std::string& ar
 std::string* JsonParser::extractObjects(const std::string& arrayContent, int& count) const {
     // Count objects (count opening braces at depth 0)
     count = 0;
-    int depth = 0;
+    int depth = 0; //iç içe obje seviyesi
     
     for (size_t i = 0; i < arrayContent.length(); i++) {
         if (arrayContent[i] == '{') {
-            if (depth == 0) count++;
-            depth++;
+            if (depth == 0) count++;  //yeni object başladı
+            depth++;   //bir object içine girdik
         } else if (arrayContent[i] == '}') {
-            depth--;
+            depth--;  //objectten çıktık
         }
-    }
+    } 
     
-    if (count == 0) {
+    if (count == 0) { 
         return nullptr;
     }
     
     // Extract each object
-    std::string* objects = new std::string[count];
+    std::string* objects = new std::string[count];  //her nesne için string oluştur
     int objIndex = 0;
     depth = 0;
     size_t start = 0;
     
     for (size_t i = 0; i < arrayContent.length(); i++) {
         if (arrayContent[i] == '{') {
-            if (depth == 0) {
-                start = i;
+            if (depth == 0) {  //yeni object başladı
+                start = i;  //pozisyonunu kaydet
             }
-            depth++;
-        } else if (arrayContent[i] == '}') {
-            depth--;
+            depth++; 
+        } else if (arrayContent[i] == '}') {  //object kapandı
+            depth--;  //(depth = 0)
             if (depth == 0) {
-                objects[objIndex++] = arrayContent.substr(start, i - start + 1);
+                objects[objIndex++] = arrayContent.substr(start, i - start + 1);  //string'i array'e kaydet, sonraki nesne için index artır
             }
         }
-    }
+    }  
     
     return objects;
 }
 
 // Load facilities
 Facility* JsonParser::loadFacilities(int& count) {
-    std::string content = readFile();
-    std::string arrayContent = findArray(content, "facilities");
+    std::string content = readFile();  //tüm dosyayı oku
+    std::string arrayContent = findArray(content, "facilities");  //facilities array'ini bul
     
-    std::string* objects = extractObjects(arrayContent, count);
+    std::string* objects = extractObjects(arrayContent, count);  //array'i nesnelere böl
     if (!objects) {
         count = 0;
         return nullptr;
@@ -170,24 +170,24 @@ Facility* JsonParser::loadFacilities(int& count) {
     
     Facility* facilities = new Facility[count];
     
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {  //objectin tüm değerlerini aldık
         std::string id = extractString(objects[i], "id");
         std::string type = extractString(objects[i], "type");
         int x = extractInt(objects[i], "x");
         int y = extractInt(objects[i], "y");
         
         // Map facility ID to node
-        int nodeId = mapper.getOrCreateNode(id);
+        int nodeId = mapper.getOrCreateNode(id);  //facility'e nodeId verdik
         
-        facilities[i] = Facility(id, type, x, y, nodeId);
+        facilities[i] = Facility(id, type, x, y, nodeId);  //yeni facility nesnesi oluştur
     }
     
-    delete[] objects;
-    return facilities;
+    delete[] objects;  //memory leak olmaması için array'e ayrılan belleği serbest bırak
+    return facilities;  //facilities array'i
 }
 
 // Load bins
-Bin* JsonParser::loadBins(int& count) {
+Bin* JsonParser::loadBins(int& count) {  //same with facilities
     std::string content = readFile();
     std::string arrayContent = findArray(content, "bins");
     
@@ -217,7 +217,7 @@ Bin* JsonParser::loadBins(int& count) {
 }
 
 // Load truck
-Truck JsonParser::loadTruck() {
+Truck JsonParser::loadTruck() {  //tek truck olduğu için pointer değil
     std::string content = readFile();
     std::string arrayContent = findArray(content, "trucks");
     
@@ -236,11 +236,11 @@ Truck JsonParser::loadTruck() {
     std::string position = extractString(objects[0], "position");
     
     // Map position to node
-    int startNode = mapper.getNode(position);
-    if (startNode == -1) {
+    int startNode = mapper.getNode(position);  //position = depot'un zaten nodeId'si var
+    if (startNode == -1) {  //position bulunamadıysa uyarı
         std::cerr << "Warning: Truck position '" << position 
                   << "' not found in mappings. Defaulting to node 0." << std::endl;
-        startNode = 0;
+        startNode = 0;  //varsayılan
     }
     
     delete[] objects;
@@ -260,16 +260,16 @@ Graph JsonParser::loadGraph() {
         totalNodes = 10; // Default size
     }
     
-    Graph graph(totalNodes);
+    Graph graph(totalNodes);  //bin + facilities graphı oluştur
     
     // Parse edges
     std::string arrayContent = findArray(content, "edges");
     int count;
-    std::string* objects = extractObjects(arrayContent, count);
+    std::string* objects = extractObjects(arrayContent, count);  //edge nesnelerini aldık
     
     if (!objects) {
         std::cerr << "Warning: No edges found in JSON" << std::endl;
-        return graph;
+        return graph;  //edge yoksa boş graph
     }
     
     for (int i = 0; i < count; i++) {
@@ -279,12 +279,12 @@ Graph JsonParser::loadGraph() {
         
         // Look up node IDs
         int fromNode = mapper.getNode(from);
-        int toNode = mapper.getNode(to);
+        int toNode = mapper.getNode(to);  //string Id'leri node numaralarına çevir
         
         if (fromNode == -1) {
             std::cerr << "Warning: Edge 'from' location '" << from 
                       << "' not found in mappings." << std::endl;
-            continue;
+            continue;  //node bulunamadıysa edge'i atla sonrakine geç
         }
         
         if (toNode == -1) {
@@ -293,7 +293,7 @@ Graph JsonParser::loadGraph() {
             continue;
         }
         
-        graph.addEdge(fromNode, toNode, distance);
+        graph.addEdge(fromNode, toNode, distance);  //yeni edge'i ekle
     }
     
     delete[] objects;
@@ -301,8 +301,8 @@ Graph JsonParser::loadGraph() {
 }
 
 // Get mapper reference
-LocationMapper& JsonParser::getMapper() {
-    return mapper;
-}
+LocationMapper& JsonParser::getMapper() { 
+    return mapper; //parser dışından mapper'a ulaşmak için
+}  
 
 } // namespace project
