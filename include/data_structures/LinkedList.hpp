@@ -148,6 +148,7 @@ public:
     public:
         Iterator(Node* node) : current(node) {}
         T& operator*() { return current->data; }
+        const T& operator*() const { return current->data; }
         Iterator& operator++() { 
             current = current->next; 
             return *this; 
@@ -159,6 +160,8 @@ public:
 
     Iterator begin() { return Iterator(head); }
     Iterator end() { return Iterator(nullptr); }
+    Iterator begin() const { return Iterator(head); }
+    Iterator end() const { return Iterator(nullptr); }
 };
 
 } // namespace project
