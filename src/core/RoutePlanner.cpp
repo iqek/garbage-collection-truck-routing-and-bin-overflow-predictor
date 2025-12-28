@@ -108,7 +108,7 @@ bool RoutePlanner::hasCriticalBins(const Facilities& facilities) const {
 // Select next bin (greedy)
 int RoutePlanner::selectNextBin(Facilities& facilities) {
     Truck& truck = facilities.getTruck();   //Facilities içindeki truck’a referans alır (no copy)
-    int currentNode = truck.getCurrentNode();   //Truck’ın graph üzerindeki mevcut konumu
+    int currentNode = truck.moveTo();   //Truck’ın graph üzerindeki mevcut konumu
 
     double bestScore = INT_MAX;
     int bestIndex = -1;
@@ -136,7 +136,7 @@ Route RoutePlanner::planRoute(Facilities& facilities) {
     Truck& truck = facilities.getTruck();
 
     int currentNode = facilities.getDepotNode();    //Truck’ın başlangıç noktası olan depot node’u alınır
-    truck.setCurrentNode(currentNode);      //Truck’ın konumu depot olarak ayarlanır
+    truck.moveTo(currentNode);      //Truck’ın konumu depot olarak ayarlanır
 
     while (true) {
         int nextBinIndex = selectNextBin(facilities);
@@ -145,14 +145,15 @@ Route RoutePlanner::planRoute(Facilities& facilities) {
         Bin& bin = facilities.getBin(nextBinIndex);
 
         // Check capacity
-        if (!truck.canCollect(bin.getCurrentFill())) {
+        if (bin.getCurrentFill() > truck.getRemainingCapacity()) {
             int disposalNode =      // Mevcut konuma göre en yakın boşaltma tesisi node’u
-                findNearestDisposal(currentNode, facilities);
+                findNearestDisposal(truck.getCurrentNode(), facilities);
             if (disposalNode != -1) {   //valid dispol bulunduysa
                 route.setNeedsDisposal(true);   //Bu rotada boşaltma yapılacağını belirtir
                 currentNode = disposalNode;
-                truck.empty();
-                truck.setCurrentNode(currentNode);
+                truck.moveTo(currentNode);
+                truck.unload();
+                
             }
             continue;
         }
@@ -161,7 +162,7 @@ Route RoutePlanner::planRoute(Facilities& facilities) {
         route.addBin(nextBinIndex);             //Bin rota listesine eklenir
         truck.collect(bin.getCurrentFill());    //Bin’deki mevcut atık truck’a yüklenir
         currentNode = bin.getNodeId();          
-        truck.setCurrentNode(currentNode);      //Truck bin’in bulunduğu node’a gider
+        truck.moveTo(currentNode);      //Truck bin’in bulunduğu node’a gider
         bin.collect(bin.getCurrentFill());      //Bin’in içi boşaltılır (fill = 0)
     }
 
