@@ -1,3 +1,10 @@
+/**
+ * @file Truck.cpp
+ * @brief Implementation of Route class.
+ * @author İlber Eren TÜT
+ * @date 2025-12-28
+ */
+
 #include "core/Truck.h"
 
 namespace project {
@@ -57,3 +64,4 @@ int Truck::getCapacity() const { return capacity; }
 int Truck::getCurrentNode() const { return currentNode; }
 
 }
+
