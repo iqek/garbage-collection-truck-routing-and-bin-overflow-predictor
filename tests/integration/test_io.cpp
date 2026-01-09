@@ -5,7 +5,7 @@
 
 #include "doctest.h"
 #include "utils/JsonParser.h"
-#include "core/LocationMapper.h"  // pathler çok hata veriyo
+#include "utils/LocationMapper.h" 
 #include <fstream>
 #include <cstdio>
 

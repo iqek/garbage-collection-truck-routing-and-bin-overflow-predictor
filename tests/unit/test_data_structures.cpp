@@ -4,7 +4,7 @@
 #include "data_structures/Graph.h"
 #include "data_structures/HashTable.h"
 #include "data_structures/LinkedList.hpp"
-#include "data_structures/PriorityQueue.h"
+#include "data_structures/PriorityQueue.hpp"
 
 using namespace project;
 
