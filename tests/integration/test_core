@@ -1,0 +1,298 @@
+/**
+ * @file test_core.cpp
+ * @brief Unit tests for core components (Bin, Truck, Facility, etc.)
+ */
+
+#include "doctest.h"
+#include "core/Bin.h"
+#include "core/Truck.h"
+#include "core/Facility.h"
+#include "core/Facilities.h"
+
+using namespace project;
+
+/*=== BIN TESTS ===*/
+
+TEST_CASE("Bin: default construction") {
+    Bin bin;
+    CHECK(bin.getId() == "");
+    CHECK(bin.getCapacity() == 0);
+    CHECK(bin.getCurrentFill() == 0);
+    CHECK(bin.getFillRate() == 0);
+}
+
+TEST_CASE("Bin: parametrized construction") {
+    Bin bin("B1", "ParkAve", 100, 30, 8, 0);
+    CHECK(bin.getId() == "B1");
+    CHECK(bin.getLocation() == "ParkAve");
+    CHECK(bin.getCapacity() == 100);
+    CHECK(bin.getCurrentFill() == 30);
+    CHECK(bin.getFillRate() == 8);
+    CHECK(bin.getNodeId() == 0);
+}
+
+TEST_CASE("Bin: updateFill increases fill level") {
+    Bin bin("B1", "ParkAve", 100, 30, 8, 0);
+    bin.updateFill();
+    CHECK(bin.getCurrentFill() == 38);
+}
+
+TEST_CASE("Bin: updateFill caps at capacity") {
+    Bin bin("B1", "ParkAve", 100, 95, 10, 0);
+    bin.updateFill();
+    CHECK(bin.getCurrentFill() == 100);
+    
+    bin.updateFill();
+    CHECK(bin.getCurrentFill() == 100); // Should not exceed
+}
+
+TEST_CASE("Bin: collect reduces fill level") {
+    Bin bin("B1", "ParkAve", 100, 50, 8, 0);
+    bin.collect(30);
+    CHECK(bin.getCurrentFill() == 20);
+}
+
+TEST_CASE("Bin: collect floors at zero") {
+    Bin bin("B1", "ParkAve", 100, 20, 8, 0);
+    bin.collect(50);
+    CHECK(bin.getCurrentFill() == 0);
+}
+
+TEST_CASE("Bin: collect ignores negative amounts") {
+    Bin bin("B1", "ParkAve", 100, 50, 8, 0);
+    bin.collect(-10);
+    CHECK(bin.getCurrentFill() == 50);
+}
+
+TEST_CASE("Bin: isOverflowing detection") {
+    Bin bin("B1", "ParkAve", 100, 100, 8, 0);
+    CHECK(bin.isOverflowing() == true);
+    
+    bin.collect(10);
+    CHECK(bin.isOverflowing() == false);
+}
+
+TEST_CASE("Bin: fill history recording") {
+    Bin bin("B1", "ParkAve", 100, 0, 10, 0);
+    
+    for (int i = 1; i <= 7; i++) {
+        bin.recordFillLevel(i * 10);
+    }
+    
+    double avg = bin.getAverageFillRate();
+    CHECK(avg == doctest::Approx(40.0));
+}
+
+TEST_CASE("Bin: fill history circular buffer") {
+    Bin bin("B1", "ParkAve", 100, 0, 10, 0);
+    
+    // Fill 8 days (should wrap around)
+    for (int i = 1; i <= 8; i++) {
+        bin.recordFillLevel(i * 10);
+    }
+    
+    double avg = bin.getAverageFillRate();
+    // Should be average of days 2-8 (20,30,40,50,60,70,80)
+    CHECK(avg == doctest::Approx(50.0));
+}
+
+/*=== TRUCK TESTS ===*/
+
+TEST_CASE("Truck: default construction") {
+    Truck truck;
+    CHECK(truck.getId() == "");
+    CHECK(truck.getCapacity() == 0);
+    CHECK(truck.getLoad() == 0);
+    CHECK(truck.getCurrentNode() == 0);
+}
+
+TEST_CASE("Truck: parametrized construction") {
+    Truck truck("T1", 500, 0, 5);
+    CHECK(truck.getId() == "T1");
+    CHECK(truck.getCapacity() == 500);
+    CHECK(truck.getLoad() == 0);
+    CHECK(truck.getCurrentNode() == 5);
+}
+
+TEST_CASE("Truck: construction clamps negative load") {
+    Truck truck("T1", 500, -50, 0);
+    CHECK(truck.getLoad() == 0);
+}
+
+TEST_CASE("Truck: construction clamps overflow load") {
+    Truck truck("T1", 500, 600, 0);
+    CHECK(truck.getLoad() == 500);
+}
+
+TEST_CASE("Truck: moveTo changes location") {
+    Truck truck("T1", 500, 0, 0);
+    truck.moveTo(10);
+    CHECK(truck.getCurrentNode() == 10);
+}
+
+TEST_CASE("Truck: collect adds to load") {
+    Truck truck("T1", 500, 100, 0);
+    truck.collect(50);
+    CHECK(truck.getLoad() == 150);
+}
+
+TEST_CASE("Truck: collect rejects negative amounts") {
+    Truck truck("T1", 500, 100, 0);
+    truck.collect(-50);
+    CHECK(truck.getLoad() == 100);
+}
+
+TEST_CASE("Truck: collect rejects overflow") {
+    Truck truck("T1", 500, 450, 0);
+    truck.collect(100);
+    CHECK(truck.getLoad() == 450); // Should not change
+}
+
+TEST_CASE("Truck: unload empties truck") {
+    Truck truck("T1", 500, 300, 0);
+    truck.unload();
+    CHECK(truck.getLoad() == 0);
+}
+
+TEST_CASE("Truck: getRemainingCapacity") {
+    Truck truck("T1", 500, 200, 0);
+    CHECK(truck.getRemainingCapacity() == 300);
+}
+
+TEST_CASE("Truck: isFull detection") {
+    Truck truck("T1", 500, 500, 0);
+    CHECK(truck.isFull() == true);
+    
+    truck.unload();
+    CHECK(truck.isFull() == false);
+}
+
+/*=== FACILITY TESTS ===*/
+
+TEST_CASE("Facility: default construction") {
+    Facility facility;
+    CHECK(facility.getId() == "");
+    CHECK(facility.getType() == "");
+    CHECK(facility.getNodeId() == -1);
+}
+
+TEST_CASE("Facility: parametrized construction") {
+    Facility facility("Depot", "depot", 0, 0, 1);
+    CHECK(facility.getId() == "Depot");
+    CHECK(facility.getType() == "depot");
+    CHECK(facility.getX() == 0);
+    CHECK(facility.getY() == 0);
+    CHECK(facility.getNodeId() == 1);
+}
+
+TEST_CASE("Facility: isDepot detection") {
+    Facility depot("Depot", "depot", 0, 0, 1);
+    Facility disposal("Dump1", "disposal", 10, 10, 2);
+    
+    CHECK(depot.isDepot() == true);
+    CHECK(disposal.isDepot() == false);
+}
+
+TEST_CASE("Facility: isDisposal detection") {
+    Facility depot("Depot", "depot", 0, 0, 1);
+    Facility disposal("Dump1", "disposal", 10, 10, 2);
+    
+    CHECK(depot.isDisposal() == false);
+    CHECK(disposal.isDisposal() == true);
+}
+
+/*=== FACILITIES (CONTAINER) TESTS ===*/
+
+TEST_CASE("Facilities: default construction") {
+    Facilities facilities;
+    CHECK(facilities.getBinCount() == 0);
+    CHECK(facilities.getFacilityCount() == 0);
+}
+
+TEST_CASE("Facilities: addBin increases count") {
+    Facilities facilities;
+    Bin bin("B1", "ParkAve", 100, 30, 8, 0);
+    
+    facilities.addBin(bin);
+    CHECK(facilities.getBinCount() == 1);
+}
+
+TEST_CASE("Facilities: addBin stores correctly") {
+    Facilities facilities;
+    Bin bin1("B1", "ParkAve", 100, 30, 8, 0);
+    Bin bin2("B2", "Cafe", 100, 70, 10, 1);
+    
+    facilities.addBin(bin1);
+    facilities.addBin(bin2);
+    
+    CHECK(facilities.getBinCount() == 2);
+    CHECK(facilities.getBin(0).getId() == "B1");
+    CHECK(facilities.getBin(1).getId() == "B2");
+}
+
+TEST_CASE("Facilities: addFacility increases count") {
+    Facilities facilities;
+    Facility facility("Depot", "depot", 0, 0, 0);
+    
+    facilities.addFacility(facility);
+    CHECK(facilities.getFacilityCount() == 1);
+}
+
+TEST_CASE("Facilities: getDepotNode finds depot") {
+    Facilities facilities;
+    Facility depot("Depot", "depot", 0, 0, 5);
+    Facility disposal("Dump1", "disposal", 10, 10, 6);
+    
+    facilities.addFacility(depot);
+    facilities.addFacility(disposal);
+    
+    CHECK(facilities.getDepotNode() == 5);
+}
+
+TEST_CASE("Facilities: getDepotNode returns -1 if no depot") {
+    Facilities facilities;
+    Facility disposal("Dump1", "disposal", 10, 10, 6);
+    facilities.addFacility(disposal);
+    
+    CHECK(facilities.getDepotNode() == -1);
+}
+
+TEST_CASE("Facilities: getDisposalNodes finds all disposals") {
+    Facilities facilities;
+    Facility depot("Depot", "depot", 0, 0, 0);
+    Facility disposal1("Dump1", "disposal", 10, 10, 1);
+    Facility disposal2("Dump2", "disposal", 20, 20, 2);
+    
+    facilities.addFacility(depot);
+    facilities.addFacility(disposal1);
+    facilities.addFacility(disposal2);
+    
+    int count = 0;
+    int* disposals = facilities.getDisposalNodes(count);
+    
+    CHECK(count == 2);
+    CHECK(disposals[0] == 1);
+    CHECK(disposals[1] == 2);
+    
+    delete[] disposals;
+}
+
+TEST_CASE("Facilities: getDisposalNodes returns nullptr if none") {
+    Facilities facilities;
+    Facility depot("Depot", "depot", 0, 0, 0);
+    facilities.addFacility(depot);
+    
+    int count = 0;
+    int* disposals = facilities.getDisposalNodes(count);
+    
+    CHECK(count == 0);
+    CHECK(disposals == nullptr);
+}
+
+TEST_CASE("Facilities: setTruck and getTruck") {
+    Facilities facilities;
+    Truck truck("T1", 500, 0, 0);
+    
+    facilities.setTruck(truck);
+    CHECK(facilities.getTruck().getId() == "T1");
+}

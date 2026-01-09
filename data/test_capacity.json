@@ -1,0 +1,25 @@
+{
+  "bins": [
+    {"id": "B1", "location": "Market", "capacity": 200, "current_fill": 180, "fill_rate": 15},
+    {"id": "B2", "location": "Plaza", "capacity": 250, "current_fill": 200, "fill_rate": 20},
+    {"id": "B3", "location": "Station", "capacity": 150, "current_fill": 130, "fill_rate": 10}
+  ],
+  "trucks": [
+    {"id": "T1", "capacity": 200, "current_load": 0, "position": "Depot"}
+  ],
+  "facilities": [
+    {"id": "Depot", "type": "depot", "x": 0, "y": 0},
+    {"id": "Dump1", "type": "disposal", "x": 10, "y": 10},
+    {"id": "Dump2", "type": "disposal", "x": 20, "y": 5}
+  ],
+  "edges": [
+    {"from": "Depot", "to": "B1", "distance": 6},
+    {"from": "Depot", "to": "B2", "distance": 8},
+    {"from": "Depot", "to": "B3", "distance": 4},
+    {"from": "B1", "to": "Dump1", "distance": 3},
+    {"from": "B2", "to": "Dump1", "distance": 5},
+    {"from": "B3", "to": "Dump2", "distance": 4},
+    {"from": "B1", "to": "B2", "distance": 7},
+    {"from": "B2", "to": "B3", "distance": 6}
+  ]
+}
