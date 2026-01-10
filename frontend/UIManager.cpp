@@ -207,15 +207,15 @@ void UIManager::drawHeader() {
     
     if (state == SimulationState::RUNNING) {
         wattron(win, COLOR_PAIR(colors.SUCCESS));
-        mvwprintw(win, 1, 2, "▶ RUNNING");
+        mvwprintw(win, 1, 2, "> RUNNING");
         wattroff(win, COLOR_PAIR(colors.SUCCESS));
     } else if (state == SimulationState::PAUSED) {
         wattron(win, COLOR_PAIR(colors.WARNING));
-        mvwprintw(win, 1, 2, "⏸ PAUSED");
+        mvwprintw(win, 1, 2, "|| PAUSED");
         wattroff(win, COLOR_PAIR(colors.WARNING));
     } else {
         wattron(win, COLOR_PAIR(colors.INFO));
-        mvwprintw(win, 1, 2, "■ FINISHED");
+        mvwprintw(win, 1, 2, "[] FINISHED");
         wattroff(win, COLOR_PAIR(colors.INFO));
     }
     
@@ -272,7 +272,7 @@ void UIManager::drawBinList() {
         row++;
     }
     
-    mvwprintw(win, maxDisplay + 3, 2, "[↑↓] Navigate");
+    mvwprintw(win, maxDisplay + 3, 2, "[Up/Dn] Navigate");
     mvwprintw(win, maxDisplay + 4, 2, "[Enter] Details");
 }
 
@@ -322,12 +322,12 @@ void UIManager::drawMap() {
     mvwprintw(win, 0, 2, " CITY MAP ");
     wattroff(win, COLOR_PAIR(colors.HEADER) | A_BOLD);
     
-    mvwprintw(win, 2, 2, "   D ─── B1");
-    mvwprintw(win, 3, 2, "   │      │");
-    mvwprintw(win, 4, 2, "   B2 ─ DS1");
-    mvwprintw(win, 5, 2, "   │  ╱  │");
-    mvwprintw(win, 6, 2, "   B3───B4");
-    mvwprintw(win, 7, 2, "     ╲");
+    mvwprintw(win, 2, 2, "   D ---- B1");
+    mvwprintw(win, 3, 2, "   |      |");
+    mvwprintw(win, 4, 2, "   B2 - DS1");
+    mvwprintw(win, 5, 2, "   |  /  |");
+    mvwprintw(win, 6, 2, "   B3----B4");
+    mvwprintw(win, 7, 2, "     \\");
     mvwprintw(win, 8, 2, "       B5");
     
     mvwprintw(win, 10, 2, "[V] Full Map View");
@@ -366,13 +366,13 @@ void UIManager::drawStats() {
         
         if (bin.isOverflowing()) {
             wattron(win, COLOR_PAIR(colors.CRITICAL) | A_BOLD);
-            mvwprintw(win, alertRow++, 2, "⚠ CRITICAL: %s overflowing NOW!", 
+            mvwprintw(win, alertRow++, 2, "! CRITICAL: %s overflowing NOW!", 
                      bin.getId().c_str());
             wattroff(win, COLOR_PAIR(colors.CRITICAL) | A_BOLD);
         } else if (predictor.isCritical(bin)) {
             int days = predictor.predictDaysToOverflow(bin);
             wattron(win, COLOR_PAIR(colors.WARNING));
-            mvwprintw(win, alertRow++, 2, "⚠ WARNING: %s critical (%.1f days)", 
+            mvwprintw(win, alertRow++, 2, "! WARNING: %s critical (%.1f days)", 
                      bin.getId().c_str(), days / 1.0);
             wattroff(win, COLOR_PAIR(colors.WARNING));
         }
@@ -409,20 +409,20 @@ void UIManager::drawBinDetail() {
     int startY = centerY - boxHeight / 2;
     
     attron(COLOR_PAIR(colors.HEADER) | A_BOLD);
-    mvprintw(startY, startX, "╔");
-    for (int i = 1; i < boxWidth - 1; i++) printw("═");
-    printw("╗");
+    mvprintw(startY, startX, "+");
+    for (int i = 1; i < boxWidth - 1; i++) printw("-");
+    printw("+");
     attroff(COLOR_PAIR(colors.HEADER) | A_BOLD);
     
     for (int i = 1; i < boxHeight - 1; i++) {
-        mvprintw(startY + i, startX, "║");
-        mvprintw(startY + i, startX + boxWidth - 1, "║");
+        mvprintw(startY + i, startX, "|");
+        mvprintw(startY + i, startX + boxWidth - 1, "|");
     }
     
     attron(COLOR_PAIR(colors.HEADER) | A_BOLD);
-    mvprintw(startY + boxHeight - 1, startX, "╚");
-    for (int i = 1; i < boxWidth - 1; i++) printw("═");
-    printw("╝");
+    mvprintw(startY + boxHeight - 1, startX, "+");
+    for (int i = 1; i < boxWidth - 1; i++) printw("-");
+    printw("+");
     attroff(COLOR_PAIR(colors.HEADER) | A_BOLD);
     
     attron(COLOR_PAIR(colors.HEADER) | A_BOLD);
@@ -542,8 +542,8 @@ std::string UIManager::formatDistance(int distance) const {
 std::string UIManager::getProgressBar(int percent, int width) const {
     int filled = (percent * width) / 100;
     std::string bar;
-    for (int i = 0; i < filled; i++) bar += "█";
-    for (int i = filled; i < width; i++) bar += "░";
+    for (int i = 0; i < filled; i++) bar += "#";
+    for (int i = filled; i < width; i++) bar += "-";
     return bar;
 }
 
