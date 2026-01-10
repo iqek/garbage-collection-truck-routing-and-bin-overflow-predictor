@@ -5,8 +5,9 @@
  * @date 2025-12-28
  */
 
-#include "Simulation.h"
+#include "core/Simulation.h"
 #include <iostream>
+#include <climits>
 
 namespace project {
 
@@ -28,7 +29,28 @@ void Simulation::step() {
     checkOverflows();
 
     // 3. Plan collection route
+    // Save bin states 
+    int* savedFills = new int[facilities.getBinCount()];
+    for(int i = 0; i < facilities.getBinCount(); i++){
+        savedFills[i] = facilities.getBin(i).getCurrentFill();
+    }
+    int savedTruckLoad = facilities.getTruck().getCurrentLoad();
+    int savedTruckNode = facilities.getTruck().getCurrentNode();
     Route plannedroute = planner.planRoute(facilities);     //.planRoute kullanarak "plannedroute" oluşturduk
+    // Restore bin states
+    for(int i = 0; i < facilities.getBinCount(); i++){
+        int currentFill = facilities.getBin(i).getCurrentFill();
+        int toRestore = savedFills[i] - currentFill;
+        if(toRestore != 0){
+            // Manually restore the fill level
+            facilities.getBin(i).setCurrentFill(savedFills[i]);
+        }
+    }
+    delete[] savedFills;
+    
+    // Restore truck state
+    facilities.getTruck().setCurrentLoad(savedTruckLoad);
+    facilities.getTruck().moveTo(savedTruckNode);
 
     // 4. Execute truck movements and collections
     Truck& truck = facilities.getTruck();
@@ -41,7 +63,9 @@ void Simulation::step() {
         // 4.1 Bin'e git
         int binLocation = bin.getNodeId();                  //binNode demek yerine binLocation
         int distance = planner.computeDistance(currentLocation, binLocation);
-        totalDistance += distance;
+        if (distance != INT_MAX && distance > 0) {
+            totalDistance += distance;
+        }
         truck.moveTo(binLocation);
         currentLocation = binLocation;              //binLocation'a geldik
 
@@ -65,7 +89,9 @@ void Simulation::step() {
             int disposalLocation = planner.findNearestDisposal(currentLocation, facilities);
             if (disposalLocation != -1) { //RoutePlanner.h'teki line 70'e referans
                 distance = planner.computeDistance(currentLocation, disposalLocation);
-                totalDistance += distance;
+                if (distance != INT_MAX && distance > 0) {
+                    totalDistance += distance;
+                }
                 truck.moveTo(disposalLocation);
                 truck.unload();
                 currentLocation = disposalLocation;
@@ -77,7 +103,9 @@ void Simulation::step() {
     int depotLocation = facilities.getDepotNode();
     if (currentLocation != depotLocation) {
         int distance = planner.computeDistance(currentLocation, depotLocation);
-        totalDistance += distance;
+        if (distance != INT_MAX && distance > 0) {
+            totalDistance += distance;
+        }
         truck.moveTo(depotLocation);
     }
 
@@ -104,6 +132,16 @@ bool Simulation::isFinished() const {
 // Current time getter
 int Simulation::getTime() const {
     return currentTime;
+}
+
+// Max time getter
+int Simulation::getMaxTime() const {
+    return maxTime;
+}
+
+// Facilities getter
+Facilities& Simulation::getFacilities() {
+    return facilities;
 }
 
 // Overflow check
