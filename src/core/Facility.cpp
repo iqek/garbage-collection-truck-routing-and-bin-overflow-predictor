@@ -1,8 +1,8 @@
 /**
- * @file Facilites.cpp
- * @brief Manages all physical facilities (Bins, Truck, and Facilities) in the system.
- * @author İlber Eren TÜT
- * @date 2026.01.10
+ * @file Facility.cpp
+ * @brief Represents a facility (depot or disposal site) in the city.
+ * @author İlber Eren Tüt
+ * @date 2026-01-10
  */
 
 #include "Facility.h"
@@ -64,4 +64,5 @@ int Facility::getNodeId() const{
 }
 
 } // namespace project
+
 
