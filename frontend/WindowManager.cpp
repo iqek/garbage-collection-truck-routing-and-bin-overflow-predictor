@@ -1,7 +1,8 @@
 /**
  * @file WindowManager.cpp
  * @brief Implementation of WindowManager
- * @date 2025-12-30
+ * @author Kerem Akdeniz
+ * @date 2026-01-10
  */
 
 #include "WindowManager.h"
