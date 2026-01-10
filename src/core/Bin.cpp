@@ -1,15 +1,27 @@
 /**
  * @file Bin.cpp
  * @brief Represents a garbage bin in the city.
- * @author Miray Duygulu
- * @date 2025-12-23
+ * @author İlber Eren TÜT
+ * @date 2026-01-10
  */
 
-#include "core/Bin.h"
+#include "Bin.h"
 
 namespace project {
 
-// Constructor
+Bin::Bin()
+    : id(""),
+      location(""),
+      capacity(0),
+      currentFill(0),
+      fillRate(0),
+      nodeId(-1),
+      historyIndex(0) {
+    for (int i = 0; i < 7; i=i+1){
+        fillHistory[i] = 0;
+    }
+}    
+
 Bin::Bin(const std::string& id,
          const std::string& location,
          int capacity,
@@ -25,87 +37,82 @@ Bin::Bin(const std::string& id,
       historyIndex(0)
 {
     
-    for (int i = 0; i < 7; ++i) {     // Initialize fill history to 0
+    for (int i = 0; i < 7; i=i+1){
         fillHistory[i] = 0;
     }
 }
 
+//currentfil checki
+void Bin::updateFill(){   
 
-void Bin::updateFill() {              // Updates the fill level for one day
-    currentFill += fillRate;
+    currentFill = fillRate + currentFill;
                 
-    if (currentFill > capacity) {   
-        currentFill = capacity;       //currentFill capacity ye eşitlenir çünkü
-    }                                 //ne kadar taştığıyla ilgilenmiyoruz
-                                      //eşikte olup olamadığına bakılıyor
-
-   
-    recordFillLevel(currentFill);      // Record today's fill level
+    if (currentFill > capacity){   
+        currentFill = capacity;       
+    }                                 
+                                      
+    recordFillLevel(currentFill); 
 }
 
+//collect
+void Bin::collect(int amount){   
 
-void Bin::collect(int amount) {       // Empties the bin by a specified amount
     if (amount < 0) 
     return; 
 
-    currentFill -= amount;
+    currentFill = currentFill - amount;
 
-    if (currentFill < 0) {          //we convert negative numbers to zero
+    if (currentFill < 0){          
         currentFill = 0;
     }
 }
 
 
-void Bin::recordFillLevel(int fillLevel) {   // Records fill level into circular history buffer
+void Bin::recordFillLevel(int fillLevel){
+
     fillHistory[historyIndex] = fillLevel;
-    historyIndex = (historyIndex + 1) % 7;   //for cycle
+    historyIndex = (historyIndex + 1) % 7;   
 }
 
- 
-double Bin::getAverageFillRate() const {     // we calculate average fill rate
+ //aver fill ratei
+double Bin::getAverageFillRate() const{
     int sum = 0;                            
 
-    for (int i = 0; i < 7; ++i) {
-        sum += fillHistory[i];
+    for (int i = 0; i < 7; i=i+1){
+        sum = sum + fillHistory[i];
     }
 
     return sum / 7.0;
 }
 
-
-bool Bin::isOverflowing() const {           // we check if bin is overflowing
+//fonklar
+bool Bin::isOverflowing() const{
     return currentFill >= capacity;
 }
 
-// Getter methods
 
-std::string Bin::getId() const 
-{
+//getterlar
+std::string Bin::getId() const{
     return id;
 }
 
-std::string Bin::getLocation() const 
-{
+std::string Bin::getLocation() const{
     return location;
 }
 
-int Bin::getCurrentFill() const 
-{
+int Bin::getCurrentFill() const{
     return currentFill;
 }
 
-int Bin::getCapacity() const 
-{
+int Bin::getCapacity() const{
     return capacity;
 }
 
-int Bin::getFillRate() const 
-{
+int Bin::getFillRate() const{
     return fillRate;
 }
 
-int Bin::getNodeId() const 
-{
+int Bin::getNodeId() const{
     return nodeId;
 }
 
