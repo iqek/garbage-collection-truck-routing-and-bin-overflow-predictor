@@ -1,8 +1,8 @@
 /**
  * @file Graph.h
  * @brief Represents the city map as a weighted graph using adjacency lists.
- * @author Miray Duygulu, Kerem Akdeniz, İlber Eren Tüt, İrem Irmak Ünlüer, İpek Çelik
- * @date 2025-12-23
+ * @author İrem Irmak Ünlüer
+ * @date 2026-01-10
  */
 
 #pragma once
@@ -26,27 +26,50 @@ struct Edge {
 };
 
 /**
- * @brief Graph data structure using adjacency lists.
+ * @brief Node in the pointer-based graph structure.
+ */
+struct GraphNode {
+    int nodeId;                    ///< Node identifier
+    LinkedList<Edge> edges;        ///< Adjacency list of edges
+    GraphNode* next;               ///< Pointer to next node in the list
+    
+    GraphNode() : nodeId(0), next(nullptr) {}
+    GraphNode(int id) : nodeId(id), next(nullptr) {}
+};
+
+/**
+ * @brief Graph data structure using pointer-based adjacency lists.
  *
  * Models the city with nodes (locations) and weighted edges (roads)
  * to support shortest path calculations for the RoutePlanner.
  */
 class Graph {
 private:
-    int nodes;
-    // Array of linked lists, where each list stores Edge structs.
-    LinkedList<Edge>* adjacency; 
+    GraphNode* head;      ///< Head of the linked list of nodes
+    int nodeCount;        ///< Total number of nodes
+
+    /**
+     * @brief Finds a node by its ID.
+     * @param nodeId The node ID to search for.
+     * @return Pointer to the node, or nullptr if not found.
+     */
+    GraphNode* findNode(int nodeId) const;
 
 public:
     /**
+     * @brief Constructs an empty graph.
+     */
+    Graph();
+    
+    /**
      * @brief Constructs a graph with a specified number of nodes.
-     * @param nodeCount The total number of nodes in the graph.
+     * @param nodeCount The total number of nodes to create.
      */
     explicit Graph(int nodeCount);
     
     /**
-     * @brief Destroys the graph and releases memory for adjacency lists.
-     * @post Dynamically allocated memory for the `adjacency` array is deallocated.
+     * @brief Destroys the graph and releases memory.
+     * @post Dynamically allocated memory for all nodes is deallocated.
      */
     ~Graph();
 
