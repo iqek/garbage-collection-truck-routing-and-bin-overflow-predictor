@@ -106,8 +106,8 @@ TEST_CASE("[UNIT] test_search") {
     }
 }
 
-TEST_CASE("[UNIT] test_traversal") {
-    SUBCASE("LinkedList iteration") {
+TEST_CASE("[UNIT] test_traversal"){
+    SUBCASE("LinkedList iteration"){
         LinkedList<int> list;
         list.pushBack(1);
         list.pushBack(2);
@@ -120,14 +120,14 @@ TEST_CASE("[UNIT] test_traversal") {
         CHECK(sum == 6);
     }
     
-    SUBCASE("Graph edge traversal") {
+    SUBCASE("Graph edge traversal"){
         Graph g(4);
         g.addEdge(0, 1, 5);
         g.addEdge(0, 2, 3);
-        
         const LinkedList<Edge>& adj = g.getAdjList(0);
         int count = 0;
-        for (const Edge& e : adj) {
+        for (const Edge& e : adj){
+            (void)e;
             count++;
         }
         CHECK(count == 2);
