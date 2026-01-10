@@ -1,7 +1,8 @@
 /**
  * @file WindowManager.h
  * @brief Manages ncurses windows and layout
- * @date 2025-12-30
+ * @author Kerem Akdeniz
+ * @date 2026-01-10
  */
 
 #pragma once
@@ -24,7 +25,6 @@ public:
     void destroyWindows();
     void refreshAll();
     void resizeWindows();
-    
     WINDOW* getWindow(const std::string& name);
 };
 
