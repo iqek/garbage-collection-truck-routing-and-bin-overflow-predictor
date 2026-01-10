@@ -5,9 +5,9 @@
  * @date 2026-01-10
  */
 
-#include "Facility.h"
+#include "core/Facility.h"
 
-namespace project {
+namespace project{
 
 Facility::Facility()
     : id(""),
@@ -15,11 +15,7 @@ Facility::Facility()
       x(0),
       y(0),
       nodeId(-1) //geçersiz default
-{
-
-}
-
-
+{}
 
 Facility::Facility(const std::string& id,
                    const std::string& type,
