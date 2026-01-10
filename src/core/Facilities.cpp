@@ -1,4 +1,11 @@
 
+/**
+ * @file Facilites.cpp
+ * @brief Manages all physical facilities (Bins, Truck, and Facilities) in the system.
+ * @author İlber Eren TÜT
+ * @date 2026.01.10
+ */
+
 #include "Facilities.h"
 
 namespace project {
@@ -123,3 +130,4 @@ Truck& Facilities::getTruck() {
 }
 
 } // namespace project
+
