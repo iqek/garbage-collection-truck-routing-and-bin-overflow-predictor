@@ -1,8 +1,8 @@
 /**
- * @file Truck.cpp
- * @brief Implementation of Route class.
- * @author İlber Eren TÜT
- * @date 2025-12-28
+ * @file Truck.h
+ * @brief Garbage collection truck and its basic operations.
+ * @author İlber Eren Tüt
+ * @date 2025-01-10
  */
 
 #include "core/Truck.h"
@@ -64,4 +64,5 @@ int Truck::getCapacity() const { return capacity; }
 int Truck::getCurrentNode() const { return currentNode; }
 
 }
+
 
