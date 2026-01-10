@@ -1,69 +1,153 @@
 /**
  * @file Graph.cpp
- * @brief Pointer-based graph implementation using adjacency lists
- * @author Ýrem Irmak Ünlüer
- * @date 2025-12-29
+ * @brief Pointer-based graph implementation using adjacency lists.
+ * @author Ä°rem Irmak ÃœnlÃ¼er
+ * @date 2026-01-10
  */
 
-#include "graph.h"
+#include "Graph.h"
 
-// Constructor
-Graph::Graph() {
-    head = nullptr;
+namespace project {
+
+// Default constructor
+Graph::Graph() : head(nullptr), nodeCount(0) {
 }
 
-// Adds a new node to the graph
-Node* Graph::addNode(int id, NodeType type) {
-    Node* newNode = new Node;          // allocate node
-    newNode->id = id;                  // set node ID
-    newNode->type = type;              // set node type
-    newNode->edges = nullptr;          // no edges yet
-    newNode->next = head;              // insert at front
-    head = newNode;
-    return newNode;
+// Constructor with node count
+Graph::Graph(int count) : head(nullptr), nodeCount(count) {
+    for (int i = count - 1; i >= 0; i--) {    //create nodes in reverse order
+        GraphNode* newNode = new GraphNode(i);
+        newNode->next = head;    //insert at front
+        head = newNode;
+    }
+}
+
+// Destructor
+Graph::~Graph() {
+    GraphNode* current = head;
+    while (current != nullptr) {
+        GraphNode* temp = current;
+        current = current->next;
+        delete temp;    //free each node
+    }
+}
+
+// Copy constructor
+Graph::Graph(const Graph& other) : head(nullptr), nodeCount(other.nodeCount) {
+    if (other.head == nullptr) {
+        return;
+    }
+    
+    GraphNode* otherCurrent = other.head;
+    GraphNode* prevNode = nullptr;
+    
+    while (otherCurrent != nullptr) {
+        GraphNode* newNode = new GraphNode(otherCurrent->nodeId);
+        newNode->edges = otherCurrent->edges;    //copy adjacency list
+        
+        if (prevNode == nullptr) {
+            head = newNode;    //first node
+        } else {
+            prevNode->next = newNode;    //link to previous
+        }
+        
+        prevNode = newNode;
+        otherCurrent = otherCurrent->next;
+    }
+}
+
+// Assignment operator
+Graph& Graph::operator=(const Graph& other) {
+    if (this == &other) {
+        return *this;    //self-assignment check
+    }
+    
+    GraphNode* current = head;    //clean up existing nodes
+    while (current != nullptr) {
+        GraphNode* temp = current;
+        current = current->next;
+        delete temp;
+    }
+    
+    head = nullptr;
+    nodeCount = other.nodeCount;
+    
+    if (other.head == nullptr) {
+        return *this;
+    }
+    
+    GraphNode* otherCurrent = other.head;
+    GraphNode* prevNode = nullptr;
+    
+    while (otherCurrent != nullptr) {
+        GraphNode* newNode = new GraphNode(otherCurrent->nodeId);
+        newNode->edges = otherCurrent->edges;    //copy adjacency list
+        
+        if (prevNode == nullptr) {
+            head = newNode;    //first node
+        } else {
+            prevNode->next = newNode;    //link to previous
+        }
+        
+        prevNode = newNode;
+        otherCurrent = otherCurrent->next;
+    }
+    
+    return *this;
 }
 
 // Finds a node by its ID
-Node* Graph::findNode(int id) {
-    Node* curr = head;                 // start from head
-    while (curr != nullptr) {
-        if (curr->id == id)
-            return curr;               // node found
-        curr = curr->next;             // move to next
-    }
-    return nullptr;                    // not found
-}
-
-// Adds an edge between two nodes
-void Graph::addEdge(int fromId, int toId, double distance) {
-    Node* from = findNode(fromId);     // source node
-    Node* to = findNode(toId);         // destination node
-    if (!from || !to)
-        return;                        // invalid IDs
-    Edge* e = new Edge;                // allocate edge
-    e->to = to;                        // set destination
-    e->distance = distance;            // set weight
-    e->next = from->edges;             // insert at front
-    from->edges = e;
-}
-
-// Returns the head of the node list
-Node* Graph::getHead() {
-    return head;
-}
-
-// Destructor: frees all nodes and edges
-Graph::~Graph() {
-    Node* curr = head;
-    while (curr) {
-        Edge* e = curr->edges;
-        while (e) {
-            Edge* temp = e;
-            e = e->next;
-            delete temp;               // delete edge
+GraphNode* Graph::findNode(int nodeId) const {
+    GraphNode* current = head;
+    while (current != nullptr) {
+        if (current->nodeId == nodeId) {
+            return current;    //node found
         }
-        Node* tempNode = curr;
-        curr = curr->next;
-        delete tempNode;               // delete node
+        current = current->next;
+    }
+    return nullptr;    //not found
+}
+
+// Adds a weighted edge between two nodes
+void Graph::addEdge(int from, int to, int weight) {
+    GraphNode* fromNode = findNode(from);
+    if (fromNode != nullptr) {
+        Edge edge(to, weight);
+        fromNode->edges.pushBack(edge);    //add edge to adjacency list
     }
 }
+
+// Adds a bidirectional edge
+void Graph::addBidirectionalEdge(int node1, int node2, int weight) {
+    addEdge(node1, node2, weight);    //add edge in both directions
+    addEdge(node2, node1, weight);
+}
+
+// Returns the adjacency list for a specific node
+LinkedList<Edge>& Graph::getAdjList(int node) {
+    GraphNode* graphNode = findNode(node);
+    if (graphNode != nullptr) {
+        return graphNode->edges;
+    }
+    
+    static LinkedList<Edge> emptyList;    //fallback to prevent crash
+    return emptyList;
+}
+
+// Returns the adjacency list for a specific node (const version)
+const LinkedList<Edge>& Graph::getAdjList(int node) const {
+    GraphNode* graphNode = findNode(node);
+    if (graphNode != nullptr) {
+        return graphNode->edges;
+    }
+    
+    static const LinkedList<Edge> emptyList;    //fallback
+    return emptyList;
+}
+
+// Returns the total number of nodes
+int Graph::getNodeCount() const {
+    return nodeCount;
+}
+
+} // namespace project
