@@ -80,6 +80,8 @@ public:
     int getCapacity() const;
     int getFillRate() const;
     int getNodeId() const;
+    // Set
+    void setCurrentFill(int fill);
 };
 
 } // namespace project
