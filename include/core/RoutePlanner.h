@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "Graph.h"
-#include "Facilities.h"
-#include "PriorityQueue.hpp"
-#include "OverflowPredictor.h"
-#include "Route.h"
+#include "data_structures/Graph.h"
+#include "core/Facilities.h"
+#include "data_structures/PriorityQueue.hpp"
+#include "core/OverflowPredictor.h"
+#include "core/Route.h"
 
 namespace project {
 
