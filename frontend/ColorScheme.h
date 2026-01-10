@@ -1,18 +1,16 @@
 /**
  * @file ColorScheme.h
  * @brief Color pair definitions for the TUI
- * @date 2025-12-30
+ * @author Kerem Akdeniz
+ * @date 2026-01-10
  */
 
 #pragma once
-
 #include <ncurses.h>
-
 namespace project {
 
 class ColorScheme {
 public:
-    // Color pair indices
     int HEADER;
     int SUCCESS;
     int WARNING;
@@ -21,7 +19,6 @@ public:
     int INFO;
     int NORMAL;
     int HIGHLIGHT;
-    
     ColorScheme();
     void initialize();
 };
