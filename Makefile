@@ -4,10 +4,10 @@
 # ============================================================================
 # Group ID:     04
 # Members:      İpek Çelik         20240702019
-				Kerem Akdeniz      20240702047
-				İlber Eren Tüt     20240702017
-				İrem Irmak Ünlüer  20240702030
-				Miray Duygulu      20230702097
+#               Kerem Akdeniz      20240702047
+#               İlber Eren Tüt     20240702017
+#               İrem Irmak Ünlüer  20240702030
+#               Miray Duygulu      20230702097
 # Problem:      04 - Garbage Collection Truck Routing & Bin Overflow Predictor
 # ============================================================================
 
@@ -26,6 +26,7 @@ BIN_DIR := $(BUILD_DIR)/bin
 DOCS_DIR := docs
 DATA_DIR := data
 EXT_DIR := external
+FRONTEND_DIR := frontend
 
 # Default data file
 DEFAULT_DATA := $(DATA_DIR)/data.json
@@ -37,14 +38,15 @@ TEST_TARGET := $(BIN_DIR)/test_runner
 # Source files
 CORE_SOURCES := $(wildcard $(SRC_DIR)/core/*.cpp)
 UTILS_SOURCES := $(wildcard $(SRC_DIR)/utils/*.cpp)
-DS_SOURCES := $(wildcard $(SRC_DIR)/data_structures/*.cpp)
-FRONTEND_SOURCES := $(wildcard $(SRC_DIR)/frontend/*.cpp)
+DS_SOURCES := $(wildcard $(SRC_DIR)/data_structure/*.cpp)
+FRONTEND_SOURCES := $(wildcard $(FRONTEND_DIR)/*.cpp)
 
-LIB_SOURCES := $(CORE_SOURCES) $(UTILS_SOURCES) $(DS_SOURCES) $(FRONTEND_SOURCES)
+LIB_SOURCES := $(CORE_SOURCES) $(UTILS_SOURCES) $(DS_SOURCES)
 MAIN_SOURCE := $(SRC_DIR)/main.cpp
 
 # Objects
 LIB_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(LIB_SOURCES))
+FRONTEND_OBJECTS := $(patsubst $(FRONTEND_DIR)/%.cpp,$(OBJ_DIR)/frontend/%.o,$(FRONTEND_SOURCES))
 MAIN_OBJECT := $(OBJ_DIR)/main.o
 
 # Test sources (organized by subdirectory)
@@ -53,13 +55,15 @@ INTEGRATION_TESTS := $(wildcard $(TEST_DIR)/integration/*.cpp)
 EDGE_TESTS := $(wildcard $(TEST_DIR)/edge_cases/*.cpp)
 PERF_TESTS := $(wildcard $(TEST_DIR)/performance/*.cpp)
 FIXTURE_SOURCES := $(wildcard $(TEST_DIR)/fixtures/*.cpp)
+TEST_MAIN_SOURCE := $(TEST_DIR)/test_main.cpp
 
 ALL_TESTS := $(UNIT_TESTS) $(INTEGRATION_TESTS) $(EDGE_TESTS) $(PERF_TESTS)
 TEST_OBJECTS := $(patsubst $(TEST_DIR)/%.cpp,$(OBJ_DIR)/tests/%.o,$(ALL_TESTS))
 FIXTURE_OBJECTS := $(patsubst $(TEST_DIR)/%.cpp,$(OBJ_DIR)/tests/%.o,$(FIXTURE_SOURCES))
+TEST_MAIN_OBJECT := $(OBJ_DIR)/tests/test_main.o
 
 # Include paths
-INCLUDES := -I$(INC_DIR) -I$(EXT_DIR)
+INCLUDES := -I$(INC_DIR) -I$(EXT_DIR) -I$(FRONTEND_DIR)
 
 # ============================================================================
 # REQUIRED TARGETS
@@ -119,12 +123,12 @@ docs:
 
 .PHONY: directories
 directories:
-	@mkdir -p $(OBJ_DIR)/core $(OBJ_DIR)/utils $(OBJ_DIR)/data_structures $(OBJ_DIR)/frontend
+	@mkdir -p $(OBJ_DIR)/core $(OBJ_DIR)/utils $(OBJ_DIR)/data_structure $(OBJ_DIR)/frontend
 	@mkdir -p $(OBJ_DIR)/tests/unit $(OBJ_DIR)/tests/integration 
 	@mkdir -p $(OBJ_DIR)/tests/edge_cases $(OBJ_DIR)/tests/performance $(OBJ_DIR)/tests/fixtures
 	@mkdir -p $(BIN_DIR) $(DOCS_DIR)/html
 
-$(TARGET): $(LIB_OBJECTS) $(MAIN_OBJECT)
+$(TARGET): $(LIB_OBJECTS) $(FRONTEND_OBJECTS) $(MAIN_OBJECT)
 	@echo "→ Linking $(TARGET)..."
 	@$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
@@ -133,7 +137,12 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@echo "→ Compiling $<..."
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-$(TEST_TARGET): $(LIB_OBJECTS) $(FIXTURE_OBJECTS) $(TEST_OBJECTS)
+$(OBJ_DIR)/frontend/%.o: $(FRONTEND_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	@echo "→ Compiling $<..."
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+$(TEST_TARGET): $(LIB_OBJECTS) $(FRONTEND_OBJECTS) $(FIXTURE_OBJECTS) $(TEST_OBJECTS) $(TEST_MAIN_OBJECT)
 	@echo "→ Linking test executable..."
 	@$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
