@@ -6,7 +6,7 @@
  * @date 2026.01.10
  */
 
-#include "Facilities.h"
+#include "core/Facilities.h"
 
 namespace project {
 
@@ -118,14 +118,11 @@ int* Facilities::getDisposalNodes(int& count) const{
     return result;
 }
 
-
-
-
-void Facilities::setTruck(const Truck& truck) {
+void Facilities::setTruck(const Truck& truck){
     this->truck = truck;
 }
 
-Truck& Facilities::getTruck() {
+Truck& Facilities::getTruck(){
     return truck;
 }
 
