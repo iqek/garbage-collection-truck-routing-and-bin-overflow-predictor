@@ -8,7 +8,7 @@ A smart waste management system using predictive analytics and graph-based routi
 
 ## Group Information
 
-**Group Number:** [Your Group Number]
+**Group Number:** 04
 
 **Members:**
     İrem Irmak Ünlüer (20240702030)  
@@ -236,7 +236,7 @@ make docs
 │
 ├── docs/                         # Documentation
 │   ├── Doxyfile                  # Doxygen configuration
-│   └── uml/                     # Generated docs
+│   └── uml
 │
 ├── external/                     # External dependencies
 │   ├── nlohmann/
