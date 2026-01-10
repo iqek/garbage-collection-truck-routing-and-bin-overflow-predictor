@@ -4,7 +4,7 @@
  * @author Miray Duygulu
  * @date 2025-12-27
  */
-#include "OverflowPredictor.h"
+#include "core/OverflowPredictor.h"
 #include <climits>
 
 
@@ -13,9 +13,7 @@ namespace project {
 
 // Constructor
 OverflowPredictor::OverflowPredictor(int threshold)
-    : criticalThreshold(threshold) {
-    // Threshold represents the number of days under which
-    // a bin is considered critical.
+    : criticalThreshold(threshold){
 }
 
 // Predict days until overflow
@@ -68,7 +66,6 @@ bool OverflowPredictor::isCritical(const Bin& bin) const {
     return false;
     }
 
-
 // Get overflow risk score
 double OverflowPredictor::getOverflowRisk(const Bin& bin) const {
     int days = predictDaysToOverflow(bin);
@@ -81,16 +78,8 @@ double OverflowPredictor::getOverflowRisk(const Bin& bin) const {
     // Lower days => higher priority
     return static_cast<double>(days);
 }
-
-/*
- * Alternative:
- * Risk score could be inverted or weighted:
- * risk = 1.0 / (days + 1)
- * This would exaggerate urgency differences for small values.
- */
-
 // Update critical threshold
-void OverflowPredictor::setCriticalThreshold(int threshold) {
+void OverflowPredictor::setCriticalThreshold(int threshold){
     criticalThreshold = threshold;
 }
 
