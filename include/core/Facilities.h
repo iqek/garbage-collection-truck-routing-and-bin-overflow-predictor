@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "Bin.h"
-#include "Truck.h"
-#include "Facility.h"
+#include "core/Bin.h"
+#include "core/Truck.h"
+#include "core/Facility.h"
 
 namespace project {
 
