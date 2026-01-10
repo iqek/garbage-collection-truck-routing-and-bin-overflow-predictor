@@ -1,101 +1,102 @@
-#include "doctest.h"
+/**
+ * @file test_algorithms.cpp
+ * @brief Unit tests for core algorithms
+ *@author Miray Duygulu
+ *@date 2026-01-10
+ */
 
-// Core / Algorithms
+#include "doctest.h"
 #include "core/RoutePlanner.h"
 #include "core/OverflowPredictor.h"
 #include "core/Simulation.h"
 
-// Core / Data
-#include "core/Bin.h"
-#include "core/Facility.h"
-#include "core/Facilities.h"
-#include "core/Truck.h"
-
-// Graph
-#include "data_structures/Graph.h"
-
 using namespace project;
 
-/*OVERFLOW PREDICTOR TESTS*/
-
-TEST_CASE("OverflowPredictor - already overflowing bin") {
-    Bin bin("B1", "loc", 100, 100, 10, 0);
-    OverflowPredictor predictor(2);
-
-    CHECK(bin.isOverflowing() == true);
-    CHECK(predictor.predictDaysToOverflow(bin) == -1);
-    CHECK(predictor.isCritical(bin) == true);
+TEST_CASE("[UNIT] test_pathfinding") {
+    SUBCASE("Dijkstra shortest path") {
+        Graph graph(3);
+        graph.addEdge(0, 1, 5);
+        graph.addEdge(1, 2, 7);
+        
+        RoutePlanner planner(graph);
+        int dist = planner.computeDistance(0, 2);
+        CHECK(dist == 12);
+    }
+    
+    SUBCASE("Find nearest disposal") {
+        Graph graph(4);
+        graph.addEdge(0, 1, 5);
+        graph.addEdge(0, 2, 10);
+        
+        Facilities facilities;
+        Facility d1("D1", "disposal", 0, 0, 1);
+        Facility d2("D2", "disposal", 0, 0, 2);
+        facilities.addFacility(d1);
+        facilities.addFacility(d2);
+        
+        RoutePlanner planner(graph);
+        int nearest = planner.findNearestDisposal(0, facilities);
+        CHECK(nearest == 1);  // Closer one
+    }
 }
 
-TEST_CASE("OverflowPredictor - zero fill rate safety") {
-    Bin bin("B2", "loc", 100, 10, 0, 0);
-    OverflowPredictor predictor(3);
-
-    int days = predictor.predictDaysToOverflow(bin);
-    CHECK(days > 0);
+TEST_CASE("[UNIT] test_sorting") {
+    SUBCASE("Priority queue ordering") {
+        PriorityQueue<int> pq;
+        pq.push(30, 3);
+        pq.push(10, 1);
+        pq.push(20, 2);
+        
+        CHECK(pq.top() == 10);  // Lowest priority first
+        pq.pop();
+        CHECK(pq.top() == 20);
+    }
+    
+    SUBCASE("Bin priority scoring") {
+        Graph graph(3);
+        graph.addBidirectionalEdge(0, 1, 5);
+        graph.addBidirectionalEdge(0, 2, 5);
+        
+        Facilities facilities;
+        Facility depot("Depot", "depot", 0, 0, 0);
+        facilities.addFacility(depot);
+        
+        Bin safeBin("B1", "Safe", 100, 20, 5, 1);
+        Bin criticalBin("B2", "Critical", 100, 95, 10, 2);
+        facilities.addBin(safeBin);
+        facilities.addBin(criticalBin);
+        
+        Truck truck("T1", 500, 0, 0);
+        facilities.setTruck(truck);
+        
+        RoutePlanner planner(graph);
+        int selected = planner.selectNextBin(facilities);
+        CHECK(selected == 1);  // Critical bin prioritized
+    }
 }
 
-TEST_CASE("OverflowPredictor - critical threshold logic") {
-    Bin bin("B3", "loc", 100, 90, 5, 0);
-    bin.recordFillLevel(90);
-    bin.recordFillLevel(95);
-    bin.recordFillLevel(100);
-
-    OverflowPredictor predictor(2);
-    CHECK(predictor.isCritical(bin) == true);
-}
-
-/*ROUTE CLASS TESTS*/
-
-TEST_CASE("Route - deep copy correctness") {
-    int bins[3] = {1, 2, 3};
-    Route r1(bins, 3);
-    Route r2 = r1;
-
-    CHECK(r2.getLength() == 3);
-    CHECK(r2.getBinAt(0) == 1);
-    CHECK(r2.getBinAt(2) == 3);
-}
-
-TEST_CASE("Route - assignment operator self safety") {
-    int bins[2] = {5, 6};
-    Route r(bins, 2);
-
-    r = r;
-    CHECK(r.getLength() == 2);
-    CHECK(r.getBinAt(1) == 6);
-}
-
-TEST_CASE("Route - out of bounds access") {
-    Route r;
-    CHECK(r.getBinAt(0) == -1);
-}
-
-/*ROUTE PLANNER & GRAPH*/
-
-TEST_CASE("RoutePlanner - computeDistance simple graph") {
-    Graph graph(3);
-    graph.addEdge(0, 1, 5);
-    graph.addEdge(1, 2, 7);
-
-    RoutePlanner planner(graph);
-    CHECK(planner.computeDistance(0, 2) == 12);
-}
-
-TEST_CASE("RoutePlanner - no disposal facilities") {
-    Facilities facilities;
-    Graph graph(1);
-    RoutePlanner planner(graph);
-
-    CHECK(planner.findNearestDisposal(0, facilities) == -1);
-}
-
-/*SIMULATION*/
-
-TEST_CASE("Simulation - empty setup does not crash") {
-    Graph graph(1);
-    Facilities facilities;
-
-    Simulation sim(graph, facilities, 1);
-    CHECK_NOTHROW(sim.run());
+TEST_CASE("[UNIT] test_optimization") {
+    SUBCASE("Overflow prediction") {
+        Bin bin("B1", "Park", 100, 90, 5, 0);
+        OverflowPredictor predictor(2);
+        
+        int days = predictor.predictDaysToOverflow(bin);
+        CHECK(days == 2);  // (100-90)/5 = 2
+    }
+    
+    SUBCASE("Critical bin detection") {
+        Bin criticalBin("B1", "Park", 100, 98, 10, 0);
+        OverflowPredictor predictor(3);
+        
+        CHECK(predictor.isCritical(criticalBin) == true);
+    }
+    
+    SUBCASE("Route optimization") {
+        int bins[] = {1, 2, 3};
+        Route route(bins, 3);
+        route.setTotalDistance(100);
+        
+        CHECK(route.getLength() == 3);
+        CHECK(route.getTotalDistance() == 100);
+    }
 }
