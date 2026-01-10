@@ -1,8 +1,8 @@
 /**
- * @file Truck.h
+ * @file Truck.cpp
  * @brief Garbage collection truck and its basic operations.
  * @author İlber Eren Tüt
- * @date 2025-01-10
+ * @date 2026-01-10
  */
 
 #include "core/Truck.h"
@@ -64,5 +64,6 @@ int Truck::getCapacity() const { return capacity; }
 int Truck::getCurrentNode() const { return currentNode; }
 
 }
+
 
 
