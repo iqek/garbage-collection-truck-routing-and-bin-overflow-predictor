@@ -1,8 +1,8 @@
 /**
- * @file Bin.cpp
- * @brief Represents a garbage bin in the city.
+ * @file Facilites.cpp
+ * @brief Manages all physical facilities (Bins, Truck, and Facilities) in the system.
  * @author İlber Eren TÜT
- * @date 2025.12.30
+ * @date 2026.01.10
  */
 
 #include "Facility.h"
@@ -64,3 +64,4 @@ int Facility::getNodeId() const{
 }
 
 } // namespace project
+
