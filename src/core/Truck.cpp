@@ -5,7 +5,7 @@
  * @date 2026-01-10
  */
 
-#include "core/Truck.h"
+#include "Truck.h"
 
 namespace project {
 
@@ -64,6 +64,7 @@ int Truck::getCapacity() const { return capacity; }
 int Truck::getCurrentNode() const { return currentNode; }
 
 }
+
 
 
 
