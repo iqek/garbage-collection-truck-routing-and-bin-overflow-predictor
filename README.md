@@ -198,7 +198,8 @@ make docs
 │   │   ├── HashTable.cpp
 │   ├── utils/                    # Utilities
 │   │   ├── JsonParser.cpp
-│   │   └── LocationMapper.cpp
+│       └── LocationMapper.cpp
+│
 ├── frontend/                 # UI components
 │   ├── UIManager.cpp
 │   ├── UIManager.h
@@ -235,16 +236,11 @@ make docs
 │
 ├── docs/                         # Documentation
 │   ├── Doxyfile                  # Doxygen configuration
-│   └── uml                     # Generated docs
+│   └── uml/                     # Generated docs
 │
 ├── external/                     # External dependencies
 │   ├── nlohmann/
 │   └── doctest.h                 # Testing framework
-│
-├── frontend/                     # UI headers
-│   ├── UIManager.h
-│   ├── WindowManager.h
-│   └── ColorScheme.h
 │
 ├── build/                        # Build output (created by make)
 │   ├── obj/                      # Object files
