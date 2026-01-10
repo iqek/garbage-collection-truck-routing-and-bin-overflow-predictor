@@ -1,3 +1,9 @@
+/**
+ * @file Route.h
+ * @brief Represents a collection route with sequence of bins to visit.
+ * @author İlber Eren Tüt
+ * @date 2025-01-10
+ */
 
 #include "Route.h"
 
@@ -176,3 +182,4 @@ void Route::clear(){
 }
 
 } // namespace project
+
