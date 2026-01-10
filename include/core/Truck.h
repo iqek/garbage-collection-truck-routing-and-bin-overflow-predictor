@@ -74,6 +74,17 @@ public:
     // Getter methods
     std::string getId() const;
     int getLoad() const;
+    int getCurrentLoad() const;
+    int getCapacity() const;
+    int getCurrentNode() const;
+    // Set
+    void setCurrentLoad(int newLoad);
+};
+
+} // namespace project
+    // Getter methods
+    std::string getId() const;
+    int getLoad() const;
     int getCapacity() const;
     int getCurrentNode() const;
 };
