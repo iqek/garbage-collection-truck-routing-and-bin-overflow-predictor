@@ -1,8 +1,8 @@
 /**
  * @file HashTable.h
- * @brief Hash Table with Open Addressing (Linear Probing).
- * @author Miray Duygulu, Kerem Akdeniz, İlber Eren Tüt, İrem Irmak Ünlüer, İpek Çelik
- * @date 2025-12-26
+ * @brief Hash Table with Chaining using pointer-based linked lists.
+ * @author İrem Irmak Ünlüer
+ * @date 2026-01-10
  */
 
 #pragma once
@@ -11,26 +11,27 @@
 namespace project {
 
 /**
- * @struct HashEntry
- * @brief Slot for the hash table.
+ * @struct HashNode
+ * @brief Node for the chaining linked list.
  */
-struct HashEntry {
+struct HashNode {
     std::string key;
     int value;
-    bool isOccupied;
+    HashNode* next;
 
-    HashEntry();
+    HashNode();
+    HashNode(const std::string& k, int v);
 };
 
 /**
  * @class HashTable
- * @brief Linear Probing hash table for string-to-int mapping.
+ * @brief Hash table with chaining for string-to-int mapping.
  */
 class HashTable {
 private:
-    HashEntry* table;
-    int capacity;
-    int size;
+    HashNode** buckets;    ///< Array of pointers to linked list heads
+    int capacity;          ///< Number of buckets
+    int size;              ///< Number of elements
 
     /**
      * @brief DJB2 hashing algorithm.
@@ -43,7 +44,7 @@ private:
     void resize();
 
 public:
-    /** @param initialCap Starting array size. */
+    /** @param initialCap Starting number of buckets. */
     HashTable(int initialCap = 101);
     ~HashTable();
 
