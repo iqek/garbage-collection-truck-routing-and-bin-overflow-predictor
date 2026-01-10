@@ -1,0 +1,204 @@
+# ============================================================================
+# CSE 211 Project - Git Ignore File
+# ============================================================================
+
+# Build directories
+build/
+cmake-build-*/
+*.dSYM/
+
+# Compiled Object files
+*.o
+*.obj
+*.slo
+*.lo
+*.ko
+
+# Executables
+*.exe
+*.out
+*.app
+garbage_sim
+test_runner
+
+# Libraries
+*.a
+*.lib
+*.so
+*.so.*
+*.dll
+*.dylib
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# ============================================================================
+# IDE and Editor files
+# ============================================================================
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+.vscode
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# CLion / IntelliJ
+.idea/
+cmake-build-*/
+*.iml
+
+# Xcode
+xcuserdata/
+*.xcworkspace
+
+# Eclipse
+.cproject
+.project
+.settings/
+
+# Vim
+*.swp
+*.swo
+*~
+.*.swp
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ============================================================================
+# Documentation
+# ============================================================================
+
+# Doxygen output
+docs/html/
+docs/latex/
+docs/doxygen_warnings.txt
+*.pdf  # Generated LaTeX PDFs
+
+# ============================================================================
+# Testing and Analysis
+# ============================================================================
+
+# Valgrind output
+*.log
+valgrind-*.log
+massif.out.*
+callgrind.out.*
+
+# Coverage files
+*.gcov
+*.gcda
+*.gcno
+*.coverage
+
+# Profiling
+gmon.out
+*.profdata
+*.profraw
+
+# ============================================================================
+# OS Generated files
+# ============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============================================================================
+# Temporary and Log files
+# ============================================================================
+
+*.log
+*.tmp
+*.temp
+*.bak
+*.cache
+
+# ============================================================================
+# Submission Archives (keep source, ignore generated archives)
+# ============================================================================
+
+Group*.zip
+*.tar.gz
+*.tar.bz2
+submission/
+
+# ============================================================================
+# CMake
+# ============================================================================
+
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+Makefile.cmake
+
+# ============================================================================
+# Misc
+# ============================================================================
+
+# Python (if any scripts)
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Node modules (if any)
+node_modules/
+
+# Tags
+tags
+TAGS
+.tags
+
+# ctags
+*.tags
+
+# ============================================================================
+# Project-specific
+# ============================================================================
+
+# Keep data files but ignore large datasets if added
+# data/large_dataset/
+
+# Keep small test files
+!data/*.json
+
+# Ignore any generated output files
+output/
+results/

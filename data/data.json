@@ -1,0 +1,27 @@
+{
+  "bins": [
+    {"id": "B1", "location": "ParkAve", "capacity": 100, "current_fill": 30, "fill_rate": 8},
+    {"id": "B2", "location": "Cafe", "capacity": 100, "current_fill": 70, "fill_rate": 10},
+    {"id": "B3", "location": "Market", "capacity": 150, "current_fill": 120, "fill_rate": 25},
+    {"id": "B4", "location": "MainSt", "capacity": 100, "current_fill": 85, "fill_rate": 15},
+    {"id": "B5", "location": "School", "capacity": 80, "current_fill": 60, "fill_rate": 12}
+  ],
+  "trucks": [
+    {"id": "T1", "capacity": 500, "current_load": 0, "position": "Depot"}
+  ],
+  "facilities": [
+    {"id": "Depot", "type": "depot", "x": 0, "y": 0},
+    {"id": "Dump1", "type": "disposal", "x": 10, "y": 10}
+  ],
+  "edges": [
+    {"from": "Depot", "to": "B1", "distance": 5},
+    {"from": "Depot", "to": "B2", "distance": 5},
+    {"from": "B1", "to": "Dump1", "distance": 3},
+    {"from": "B2", "to": "Dump1", "distance": 4},
+    {"from": "B2", "to": "B3", "distance": 7},
+    {"from": "B3", "to": "Dump1", "distance": 4},
+    {"from": "B3", "to": "B4", "distance": 7},
+    {"from": "B3", "to": "B5", "distance": 7},
+    {"from": "B4", "to": "Dump1", "distance": 6}
+  ]
+}

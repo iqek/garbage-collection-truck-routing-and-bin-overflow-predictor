@@ -1,0 +1,24 @@
+{
+  "bins": [
+    {"id": "B1", "location": "CityHall", "capacity": 50, "current_fill": 48, "fill_rate": 25},
+    {"id": "B2", "location": "Hospital", "capacity": 80, "current_fill": 75, "fill_rate": 30},
+    {"id": "B3", "location": "Stadium", "capacity": 100, "current_fill": 95, "fill_rate": 40}
+  ],
+  "trucks": [
+    {"id": "T1", "capacity": 100, "current_load": 0, "position": "Depot"}
+  ],
+  "facilities": [
+    {"id": "Depot", "type": "depot", "x": 0, "y": 0},
+    {"id": "Dump1", "type": "disposal", "x": 15, "y": 15}
+  ],
+  "edges": [
+    {"from": "Depot", "to": "B1", "distance": 3},
+    {"from": "Depot", "to": "B2", "distance": 4},
+    {"from": "Depot", "to": "B3", "distance": 2},
+    {"from": "B1", "to": "Dump1", "distance": 5},
+    {"from": "B2", "to": "Dump1", "distance": 6},
+    {"from": "B3", "to": "Dump1", "distance": 3},
+    {"from": "B1", "to": "B2", "distance": 4},
+    {"from": "B2", "to": "B3", "distance": 5}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "bins": [],
+  "trucks": [
+    {"id": "T1", "capacity": 500, "current_load": 0, "position": "Depot"}
+  ],
+  "facilities": [
+    {"id": "Depot", "type": "depot", "x": 0, "y": 0}
+  ],
+  "edges": []
+}
