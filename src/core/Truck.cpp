@@ -1,11 +1,11 @@
 /**
- * @file Truck.cpp
+ * @file Truck.h
  * @brief Garbage collection truck and its basic operations.
  * @author İlber Eren Tüt
- * @date 2026-01-10
+ * @date 2025-01-10
  */
 
-#include "Truck.h"
+#include "core/Truck.h"
 
 namespace project {
 
@@ -60,11 +60,13 @@ bool Truck::isFull() const {
 //Returnler
 std::string Truck::getId() const { return id; }
 int Truck::getLoad() const { return load; }
+int Truck::getCurrentLoad() const { return load; }
 int Truck::getCapacity() const { return capacity; }
 int Truck::getCurrentNode() const { return currentNode; }
 
+// Setter methods
+void Truck::setCurrentLoad(int newLoad) { 
+    load = newLoad; 
 }
 
-
-
-
+}
