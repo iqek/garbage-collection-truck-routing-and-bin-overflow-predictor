@@ -1,7 +1,7 @@
 /**
  * @file main.cpp
  * @brief Entry point for the Garbage Collection Optimization System
- * @author [Your Group Members]
+ * @author Kerem Akdeniz
  * @date 2025-12-30
  */
 
@@ -11,7 +11,7 @@
 #include "core/Simulation.h"
 #include "core/Facilities.h"
 #include "utils/JsonParser.h"
-#include "frontend/UIManager.h"
+#include "UIManager.h"
 
 using namespace project;
 
