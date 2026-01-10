@@ -8,12 +8,12 @@
 #include "doctest.h"
 
 #include "data_structures/HashTable.h"
-#include "Facilities.h"
-#include "Simulation.h"
-#include "Graph.h"
-#include "Bin.h"
-#include "Facility.h"
-#include "Truck.h"
+#include "core/Facilities.h"
+#include "core/Simulation.h"
+#include "data_structures/Graph.h"
+#include "core/Bin.h"
+#include "core/Facility.h"
+#include "core/Truck.h"
 
 using namespace project;
 
