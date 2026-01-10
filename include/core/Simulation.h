@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "Graph.h"
-#include "Facilities.h"
-#include "RoutePlanner.h"
+#include "data_structures/Graph.h"
+#include "core/Facilities.h"
+#include "core/RoutePlanner.h"
 
 namespace project {
 
@@ -73,6 +73,18 @@ public:
      * @return The current day value.
      */
     int getTime() const;
+
+    /**
+     * @brief Returns the maximum simulation time (total days).
+     * @return The maximum day value.
+     */
+    int getMaxTime() const;
+
+    /**
+     * @brief Returns reference to the facilities object.
+     * @return Reference to Facilities.
+     */
+    Facilities& getFacilities();
 
     /**
      * @brief Checks for overflow events and updates counter.
