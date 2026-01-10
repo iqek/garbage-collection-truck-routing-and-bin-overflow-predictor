@@ -28,44 +28,6 @@ private:
     const char* dataPath;
     LocationMapper mapper;
 
-    /**
-     * @brief Helper to read entire file into string.
-     * @return File contents as string.
-     */
-    std::string readFile() const;
-
-    /**
-     * @brief Extracts string value from JSON for a given key.
-     * @param json The JSON string or substring.
-     * @param key The key to search for.
-     * @return The value string, or empty if not found.
-     */
-    std::string extractString(const std::string& json, const std::string& key) const;
-
-    /**
-     * @brief Extracts integer value from JSON for a given key.
-     * @param json The JSON string or substring.
-     * @param key The key to search for.
-     * @return The integer value, or 0 if not found.
-     */
-    int extractInt(const std::string& json, const std::string& key) const;
-
-    /**
-     * @brief Finds a JSON array within the file content.
-     * @param json The JSON string.
-     * @param arrayName The name of the array (e.g., "bins", "facilities").
-     * @return The array content as a string, or empty if not found.
-     */
-    std::string findArray(const std::string& json, const std::string& arrayName) const;
-
-    /**
-     * @brief Extracts individual JSON objects from an array string.
-     * @param arrayContent The array content (inside [ ]).
-     * @param count Output parameter for number of objects found.
-     * @return Array of strings, each containing one JSON object.
-     */
-    std::string* extractObjects(const std::string& arrayContent, int& count) const;
-
 public:
     /**
      * @brief Constructs the parser with the path to the data file.
