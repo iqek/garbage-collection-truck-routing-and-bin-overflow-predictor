@@ -19,6 +19,7 @@ private:
     std::string location;
     int capacity;
     int currentFill;
+    int initialFill;  // Store initial fill permanently
     int fillRate;
     int nodeId;
     int fillHistory[7];  // Last 7 days of fill data
@@ -34,8 +35,8 @@ public:
      * @param fillRate Daily fill rate (units/day).
      * @param nodeId Graph node index where the bin is located.
      */
-    Bin(const std::string& id, const std::string& location, int capacity, 
-        int currentFill, int fillRate, int nodeId);
+    Bin(const std::string& id, const std::string& location, int capacity, int currentFill,
+        int fillRate, int nodeId);
 
     /**
      * @brief Default constructor (needed for array allocation).
@@ -78,10 +79,13 @@ public:
     std::string getLocation() const;
     int getCurrentFill() const;
     int getCapacity() const;
+    int getInitialFill() const;
     int getFillRate() const;
     int getNodeId() const;
+    const int* getFillHistory() const;
+    int getHistoryIndex() const;
     // Set
     void setCurrentFill(int fill);
 };
 
-} // namespace project
+}  // namespace project

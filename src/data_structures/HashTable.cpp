@@ -10,17 +10,15 @@
 namespace project {
 
 // HashNode constructors
-HashNode::HashNode() : key(""), value(-1), next(nullptr) {
-}
+HashNode::HashNode() : key(""), value(-1), next(nullptr) {}
 
-HashNode::HashNode(const std::string& k, int v) : key(k), value(v), next(nullptr) {
-}
+HashNode::HashNode(const std::string& k, int v) : key(k), value(v), next(nullptr) {}
 
 // HashTable constructor
 HashTable::HashTable(int initialCap) : capacity(initialCap), size(0) {
     buckets = new HashNode*[capacity];
     for (int i = 0; i < capacity; i++) {
-        buckets[i] = nullptr;    //initialize all buckets to null
+        buckets[i] = nullptr;  // initialize all buckets to null
     }
 }
 
@@ -34,7 +32,7 @@ HashTable::~HashTable() {
 int HashTable::hashFunction(const std::string& key) const {
     unsigned long hash = 5381;
     for (char c : key) {
-        hash = ((hash << 5) + hash) + c;    //hash * 33 + c
+        hash = ((hash << 5) + hash) + c;  // hash * 33 + c
     }
     return hash % capacity;
 }
@@ -43,28 +41,28 @@ int HashTable::hashFunction(const std::string& key) const {
 void HashTable::resize() {
     int oldCapacity = capacity;
     HashNode** oldBuckets = buckets;
-    
-    capacity = capacity * 2 + 1;    //new capacity
+
+    capacity = capacity * 2 + 1;  // new capacity
     buckets = new HashNode*[capacity];
-    
+
     for (int i = 0; i < capacity; i++) {
-        buckets[i] = nullptr;    //initialize new buckets
+        buckets[i] = nullptr;  // initialize new buckets
     }
-    
-    size = 0;    //reset size, will be recounted during rehash
-    
+
+    size = 0;  // reset size, will be recounted during rehash
+
     // Rehash all elements
     for (int i = 0; i < oldCapacity; i++) {
         HashNode* current = oldBuckets[i];
         while (current != nullptr) {
-            insert(current->key, current->value);    //reinsert into new table
+            insert(current->key, current->value);  // reinsert into new table
             HashNode* temp = current;
             current = current->next;
-            delete temp;    //free old node
+            delete temp;  // free old node
         }
     }
-    
-    delete[] oldBuckets;    //free old bucket array
+
+    delete[] oldBuckets;  // free old bucket array
 }
 
 // Inserts or updates a pair
@@ -73,19 +71,19 @@ void HashTable::insert(const std::string& key, int value) {
     if (size >= capacity * 0.7) {
         resize();
     }
-    
+
     int index = hashFunction(key);
     HashNode* current = buckets[index];
-    
+
     // Check if key already exists
     while (current != nullptr) {
         if (current->key == key) {
-            current->value = value;    //update existing key
+            current->value = value;  // update existing key
             return;
         }
         current = current->next;
     }
-    
+
     // Insert new node at front of chain
     HashNode* newNode = new HashNode(key, value);
     newNode->next = buckets[index];
@@ -97,15 +95,15 @@ void HashTable::insert(const std::string& key, int value) {
 int HashTable::search(const std::string& key) const {
     int index = hashFunction(key);
     HashNode* current = buckets[index];
-    
+
     while (current != nullptr) {
         if (current->key == key) {
-            return current->value;    //key found
+            return current->value;  // key found
         }
         current = current->next;
     }
-    
-    return -1;    //key not found
+
+    return -1;  // key not found
 }
 
 // Resets all entries
@@ -115,9 +113,9 @@ void HashTable::clear() {
         while (current != nullptr) {
             HashNode* temp = current;
             current = current->next;
-            delete temp;    //free each node in chain
+            delete temp;  // free each node in chain
         }
-        buckets[i] = nullptr;    //reset bucket head
+        buckets[i] = nullptr;  // reset bucket head
     }
     size = 0;
 }
@@ -127,4 +125,4 @@ int HashTable::getSize() const {
     return size;
 }
 
-} // namespace project
+}  // namespace project

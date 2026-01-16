@@ -81,4 +81,4 @@ public:
     void setCurrentLoad(int newLoad);
 };
 
-} // namespace project
+}  // namespace project

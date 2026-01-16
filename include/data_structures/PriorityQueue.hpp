@@ -26,8 +26,8 @@ private:
         HeapNode* parent;
         HeapNode* left;
         HeapNode* right;
-        
-        HeapNode(const T& d, int p) 
+
+        HeapNode(const T& d, int p)
             : data(d), priority(p), parent(nullptr), left(nullptr), right(nullptr) {}
     };
 
@@ -38,18 +38,19 @@ private:
      * @brief Finds the last node in level-order traversal for insertion.
      */
     HeapNode* findLastNode() const {
-        if (root == nullptr) return nullptr;
-        
+        if (root == nullptr)
+            return nullptr;
+
         // Use level-order traversal to find insertion point
         HeapNode** queue = new HeapNode*[heapSize];
         int front = 0, rear = 0;
-        
+
         queue[rear++] = root;
         HeapNode* lastNode = nullptr;
-        
+
         while (front < rear) {
             lastNode = queue[front++];
-            
+
             if (lastNode->left != nullptr) {
                 queue[rear++] = lastNode->left;
             }
@@ -57,7 +58,7 @@ private:
                 queue[rear++] = lastNode->right;
             }
         }
-        
+
         delete[] queue;
         return lastNode;
     }
@@ -66,26 +67,27 @@ private:
      * @brief Finds the insertion parent for the next node.
      */
     HeapNode* findInsertionParent() const {
-        if (root == nullptr) return nullptr;
-        
+        if (root == nullptr)
+            return nullptr;
+
         HeapNode** queue = new HeapNode*[heapSize + 1];
         int front = 0, rear = 0;
-        
+
         queue[rear++] = root;
         HeapNode* insertParent = nullptr;
-        
+
         while (front < rear) {
             HeapNode* current = queue[front++];
-            
+
             if (current->left == nullptr || current->right == nullptr) {
                 insertParent = current;
                 break;
             }
-            
+
             queue[rear++] = current->left;
             queue[rear++] = current->right;
         }
-        
+
         delete[] queue;
         return insertParent;
     }
@@ -96,10 +98,10 @@ private:
     void swapNodes(HeapNode* a, HeapNode* b) {
         T tempData = a->data;
         int tempPriority = a->priority;
-        
+
         a->data = b->data;
         a->priority = b->priority;
-        
+
         b->data = tempData;
         b->priority = tempPriority;
     }
@@ -120,17 +122,18 @@ private:
     void heapifyDown(HeapNode* node) {
         while (true) {
             HeapNode* smallest = node;
-            
+
             if (node->left != nullptr && node->left->priority < smallest->priority) {
                 smallest = node->left;
             }
-            
+
             if (node->right != nullptr && node->right->priority < smallest->priority) {
                 smallest = node->right;
             }
-            
-            if (smallest == node) break;
-            
+
+            if (smallest == node)
+                break;
+
             swapNodes(node, smallest);
             node = smallest;
         }
@@ -140,13 +143,14 @@ private:
      * @brief Recursively copies a subtree.
      */
     HeapNode* copyTree(HeapNode* node, HeapNode* parent) {
-        if (node == nullptr) return nullptr;
-        
+        if (node == nullptr)
+            return nullptr;
+
         HeapNode* newNode = new HeapNode(node->data, node->priority);
         newNode->parent = parent;
         newNode->left = copyTree(node->left, newNode);
         newNode->right = copyTree(node->right, newNode);
-        
+
         return newNode;
     }
 
@@ -154,8 +158,9 @@ private:
      * @brief Recursively deletes a subtree.
      */
     void deleteTree(HeapNode* node) {
-        if (node == nullptr) return;
-        
+        if (node == nullptr)
+            return;
+
         deleteTree(node->left);
         deleteTree(node->right);
         delete node;
@@ -170,9 +175,7 @@ public:
     /**
      * @brief Destructor to free allocated memory.
      */
-    ~PriorityQueue() {
-        deleteTree(root);
-    }
+    ~PriorityQueue() { deleteTree(root); }
 
     /**
      * @brief Copy constructor.
@@ -191,7 +194,7 @@ public:
             deleteTree(root);
             root = nullptr;
             heapSize = other.heapSize;
-            
+
             if (other.root != nullptr) {
                 root = copyTree(other.root, nullptr);
             }
@@ -201,7 +204,7 @@ public:
 
     /**
      * @brief Inserts an element with a specified priority.
-     * 
+     *
      * Elements are inserted in sorted order by priority (ascending).
      * @param value The value to insert.
      * @param priority The priority value (lower value = higher priority).
@@ -209,22 +212,22 @@ public:
      */
     void push(const T& value, int priority) {
         HeapNode* newNode = new HeapNode(value, priority);
-        
+
         if (root == nullptr) {
             root = newNode;
             heapSize = 1;
             return;
         }
-        
+
         HeapNode* parent = findInsertionParent();
         newNode->parent = parent;
-        
+
         if (parent->left == nullptr) {
             parent->left = newNode;
         } else {
             parent->right = newNode;
         }
-        
+
         heapSize++;
         heapifyUp(newNode);
     }
@@ -235,31 +238,32 @@ public:
      * @post The highest priority item (root) is removed from the heap.
      */
     void pop() {
-        if (root == nullptr) return;
-        
+        if (root == nullptr)
+            return;
+
         if (heapSize == 1) {
             delete root;
             root = nullptr;
             heapSize = 0;
             return;
         }
-        
+
         HeapNode* lastNode = findLastNode();
-        
+
         // Swap root with last node
         root->data = lastNode->data;
         root->priority = lastNode->priority;
-        
+
         // Remove last node
         if (lastNode->parent->left == lastNode) {
             lastNode->parent->left = nullptr;
         } else {
             lastNode->parent->right = nullptr;
         }
-        
+
         delete lastNode;
         heapSize--;
-        
+
         if (root != nullptr) {
             heapifyDown(root);
         }
@@ -270,34 +274,26 @@ public:
      * @pre The queue must not be empty.
      * @return Reference to the highest priority element.
      */
-    T& top() {
-        return root->data;
-    }
+    T& top() { return root->data; }
 
     /**
      * @brief Returns the highest priority element (const version).
      * @pre The queue must not be empty.
      * @return Const reference to the highest priority element.
      */
-    const T& top() const {
-        return root->data;
-    }
+    const T& top() const { return root->data; }
 
     /**
      * @brief Checks if the queue contains any elements.
      * @return `true` if the queue is empty.
      */
-    bool isEmpty() const {
-        return root == nullptr;
-    }
+    bool isEmpty() const { return root == nullptr; }
 
     /**
      * @brief Gets the number of elements in the queue.
      * @return Size of the queue.
      */
-    int size() const {
-        return heapSize;
-    }
+    int size() const { return heapSize; }
 };
 
-} // namespace project
+}  // namespace project

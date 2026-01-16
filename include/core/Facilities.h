@@ -8,8 +8,8 @@
 #pragma once
 
 #include "core/Bin.h"
-#include "core/Truck.h"
 #include "core/Facility.h"
+#include "core/Truck.h"
 
 namespace project {
 
@@ -32,7 +32,7 @@ public:
      * @brief Constructs an empty facilities container.
      */
     Facilities();
-    
+
     /**
      * @brief Destroys the facilities and frees dynamic memory.
      * @post The memory allocated for bins and facilities arrays is deallocated.
@@ -111,4 +111,4 @@ public:
     Truck& getTruck();
 };
 
-} // namespace project
+}  // namespace project

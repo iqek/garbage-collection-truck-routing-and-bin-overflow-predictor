@@ -5,26 +5,23 @@
  * @date 2025-12-27
  */
 #include "core/OverflowPredictor.h"
-#include <climits>
 
+#include <climits>
 
 namespace project {
 
-
 // Constructor
-OverflowPredictor::OverflowPredictor(int threshold)
-    : criticalThreshold(threshold) {
+OverflowPredictor::OverflowPredictor(int threshold) : criticalThreshold(threshold) {
     // Threshold represents the number of days under which
     // a bin is considered critical.
 }
 
 // Predict days until overflow
 int OverflowPredictor::predictDaysToOverflow(const Bin& bin) const {
-    int capacity = bin.getCapacity();           //Bin’in maksimum kapasitesi
-    int currentFill = bin.getCurrentFill();     //Şu anki doluluk miktarı
+    int capacity = bin.getCapacity();        // Bin’in maksimum kapasitesi
+    int currentFill = bin.getCurrentFill();  // Şu anki doluluk miktarı
 
-    
-    if (bin.isOverflowing()) {  // If bin is already full 
+    if (bin.isOverflowing()) {  // If bin is already full
         return -1;
     }
 
@@ -40,15 +37,16 @@ int OverflowPredictor::predictDaysToOverflow(const Bin& bin) const {
     // Precondition safety check
     if (fillRate <= 0) {
         // Cannot predict overflow without a valid fill rate
-        return INT_MAX; //infinity value
+        return INT_MAX;  // infinity value
     }
 
     // Formula from header documentation:
     // (capacity - currentFill) / effectiveFillRate
     double remaining = capacity - currentFill;
     int days = static_cast<int>(remaining / fillRate);
-    if (days < 1) days = 1;
-    
+    if (days < 1)
+        days = 1;
+
     return days;
 }
 
@@ -62,12 +60,11 @@ bool OverflowPredictor::isCritical(const Bin& bin) const {
     }
 
     if (days <= criticalThreshold) {
-    // Overflow is expected within the critical threshold
+        // Overflow is expected within the critical threshold
         return true;
     }
     return false;
-    }
-
+}
 
 // Get overflow risk score
 double OverflowPredictor::getOverflowRisk(const Bin& bin) const {
@@ -94,4 +91,4 @@ void OverflowPredictor::setCriticalThreshold(int threshold) {
     criticalThreshold = threshold;
 }
 
-} // namespace project
+}  // namespace project

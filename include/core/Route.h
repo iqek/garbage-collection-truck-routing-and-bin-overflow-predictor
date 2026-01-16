@@ -11,7 +11,7 @@ namespace project {
 
 /**
  * @brief Represents a planned collection route.
- * 
+ *
  * A route is a sequence of bin indices that the truck should visit,
  * along with metadata about the route's efficiency.
  */
@@ -105,4 +105,4 @@ public:
     void clear();
 };
 
-} // namespace project
+}  // namespace project

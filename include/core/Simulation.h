@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "data_structures/Graph.h"
 #include "core/Facilities.h"
 #include "core/RoutePlanner.h"
+#include "data_structures/Graph.h"
 
 namespace project {
 
@@ -26,11 +26,16 @@ private:
     RoutePlanner planner;
     int currentTime;
     int maxTime;  // Total simulation duration (e.g., 7 days)
-    
+
     // Performance tracking
     int overflowCount;
     int totalDistance;
     int collectionsCompleted;
+
+    // Initial state storage for reset
+    int* initialBinFills;
+    int initialTruckLoad;
+    int initialTruckNode;
 
 public:
     /**
@@ -40,6 +45,11 @@ public:
      * @param duration Total simulation days (default 7 for one week).
      */
     Simulation(Graph& graph, Facilities& facilities, int duration = 7);
+
+    /**
+     * @brief Destructor - frees allocated memory.
+     */
+    ~Simulation();
 
     /**
      * @brief Advances the simulation by one time step (one day).
@@ -57,7 +67,7 @@ public:
 
     /**
      * @brief Runs the complete simulation until finished.
-     * 
+     *
      * Repeatedly calls step() until isFinished() returns true.
      */
     void run();
@@ -94,14 +104,14 @@ public:
 
     /**
      * @brief Handles dynamic rescheduling when critical bins detected.
-     * 
+     *
      * Called when sensor data indicates unexpected rapid filling.
      * Adjusts current route to prioritize critical bins.
      */
     void handleEmergencyReschedule();
 
     // Performance metrics getters
-    
+
     /**
      * @brief Gets total number of overflow events recorded.
      * @return Overflow count.
@@ -124,6 +134,13 @@ public:
      * @brief Prints simulation statistics and results.
      */
     void printStatistics() const;
+
+    /**
+     * @brief Resets the simulation to initial state.
+     *
+     * Resets time, counters, bin fill levels, and truck state.
+     */
+    void reset();
 };
 
-} // namespace project
+}  // namespace project

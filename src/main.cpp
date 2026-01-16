@@ -5,13 +5,13 @@
  * @date 2025-12-30
  */
 
+#include "UIManager.h"
+#include "core/Facilities.h"
+#include "core/Simulation.h"
+#include "utils/JsonParser.h"
+
 #include <iostream>
 #include <string>
-
-#include "core/Simulation.h"
-#include "core/Facilities.h"
-#include "utils/JsonParser.h"
-#include "UIManager.h"
 
 using namespace project;
 
@@ -46,7 +46,7 @@ void runTextMode(const char* dataFile, int days) {
 
     // Parse JSON data
     JsonParser parser(dataFile);
-    
+
     int binCount = 0, facilityCount = 0;
     Bin* bins = parser.loadBins(binCount);
     Facility* facilities = parser.loadFacilities(facilityCount);
@@ -72,8 +72,8 @@ void runTextMode(const char* dataFile, int days) {
     std::cout << "System Configuration:\n";
     std::cout << "  Bins:       " << binCount << "\n";
     std::cout << "  Facilities: " << facilityCount << "\n";
-    std::cout << "  Truck:      " << truck.getId() 
-              << " (capacity: " << truck.getCapacity() << ")\n";
+    std::cout << "  Truck:      " << truck.getId() << " (capacity: " << truck.getCapacity()
+              << ")\n";
     std::cout << "  Duration:   " << days << " days\n";
     std::cout << "\nRunning simulation...\n\n";
 
@@ -96,7 +96,7 @@ void runTextMode(const char* dataFile, int days) {
 void runUIMode(const char* dataFile, int days) {
     // Parse JSON data
     JsonParser parser(dataFile);
-    
+
     int binCount = 0, facilityCount = 0;
     Bin* bins = parser.loadBins(binCount);
     Facility* facilities = parser.loadFacilities(facilityCount);
@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
     // Process options
     for (int i = 2; i < argc; i++) {
         std::string arg = argv[i];
-        
+
         if (arg == "--help" || arg == "-h") {
             printUsage(argv[0]);
             return 0;

@@ -1,3 +1,4 @@
+
 {
   "bins": [
     {"id": "B1", "location": "ParkAve", "capacity": 100, "current_fill": 30, "fill_rate": 8},

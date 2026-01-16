@@ -30,8 +30,7 @@ public:
      * @param y Y coordinate.
      * @param nodeId Graph node index where facility is located.
      */
-    Facility(const std::string& id, const std::string& type, 
-             int x, int y, int nodeId);
+    Facility(const std::string& id, const std::string& type, int x, int y, int nodeId);
 
     /**
      * @brief Default constructor (needed for array allocation).
@@ -58,4 +57,4 @@ public:
     int getNodeId() const;
 };
 
-} // namespace project
+}  // namespace project

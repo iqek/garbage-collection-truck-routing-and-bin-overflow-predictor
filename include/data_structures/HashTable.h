@@ -29,9 +29,9 @@ struct HashNode {
  */
 class HashTable {
 private:
-    HashNode** buckets;    ///< Array of pointers to linked list heads
-    int capacity;          ///< Number of buckets
-    int size;              ///< Number of elements
+    HashNode** buckets;  ///< Array of pointers to linked list heads
+    int capacity;        ///< Number of buckets
+    int size;            ///< Number of elements
 
     /**
      * @brief DJB2 hashing algorithm.
@@ -69,4 +69,4 @@ public:
     int getSize() const;
 };
 
-} // namespace project
+}  // namespace project

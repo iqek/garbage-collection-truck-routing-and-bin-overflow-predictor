@@ -10,37 +10,35 @@
 namespace project {
 
 Truck::Truck(const std::string& id, int capacity, int initialLoad, int startNode)
-    : id(id), capacity(capacity), load(initialLoad), currentNode(startNode)
-{
-    
-    //Load sınırlayıcısı
+    : id(id), capacity(capacity), load(initialLoad), currentNode(startNode) {
+    // Load sınırlayıcısı
 
-    if(load < 0){
-        load=0;
+    if (load < 0) {
+        load = 0;
     }
 
-    if(load > capacity){
-        load=capacity;
+    if (load > capacity) {
+        load = capacity;
     }
 }
 
 Truck::Truck() : id(""), capacity(0), load(0), currentNode(0) {}
 
 void Truck::moveTo(int node) {
-
-    //Truckın hareket fonk.
+    // Truckın hareket fonk.
 
     currentNode = node;
 }
 
 void Truck::collect(int amount) {
-    
-    //Burda kısmi mi eklicez yoksa hepsini ekleyip mi devam edicez ona sonra karar verip dönücem
-    //Collectleme fonk.
+    // Burda kısmi mi eklicez yoksa hepsini ekleyip mi devam edicez ona sonra karar verip dönücem
+    // Collectleme fonk.
 
-    if (amount < 0) return;
+    if (amount < 0)
+        return;
 
-    if (load + amount > capacity) return;
+    if (load + amount > capacity)
+        return;
 
     load = load + amount;
 }
@@ -57,18 +55,26 @@ bool Truck::isFull() const {
     return load >= capacity;
 }
 
-//Returnler
-std::string Truck::getId() const { return id; }
-int Truck::getLoad() const { return load; }
-int Truck::getCurrentLoad() const { return load; }
-int Truck::getCapacity() const { return capacity; }
-int Truck::getCurrentNode() const { return currentNode; }
+// Returnler
+std::string Truck::getId() const {
+    return id;
+}
+int Truck::getLoad() const {
+    return load;
+}
+int Truck::getCurrentLoad() const {
+    return load;
+}
+int Truck::getCapacity() const {
+    return capacity;
+}
+int Truck::getCurrentNode() const {
+    return currentNode;
+}
 
 // Setter methods
-void Truck::setCurrentLoad(int newLoad) { 
-    load = newLoad; 
+void Truck::setCurrentLoad(int newLoad) {
+    load = newLoad;
 }
 
-}
-
-
+}  // namespace project

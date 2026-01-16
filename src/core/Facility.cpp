@@ -10,59 +10,40 @@
 namespace project {
 
 Facility::Facility()
-    : id(""),
-      type(""),
-      x(0),
-      y(0),
-      nodeId(-1) //geçersiz default
-{
+    : id(""), type(""), x(0), y(0), nodeId(-1)  // geçersiz default
+{}
 
+Facility::Facility(const std::string& id, const std::string& type, int x, int y, int nodeId)
+    : id(id), type(type), x(x), y(y), nodeId(nodeId) {
+    // sınırlayıcı vs yok
 }
 
-
-
-Facility::Facility(const std::string& id,
-                   const std::string& type,
-                   int x,
-                   int y,
-                   int nodeId)
-    : id(id),
-      type(type),
-      x(x),
-      y(y),
-      nodeId(nodeId)
-{
-    //sınırlayıcı vs yok
-}
-
-bool Facility::isDepot() const{
+bool Facility::isDepot() const {
     return type == "depot";
 }
 
-bool Facility::isDisposal() const{
+bool Facility::isDisposal() const {
     return type == "disposal";
 }
 
-std::string Facility::getId() const{
+std::string Facility::getId() const {
     return id;
 }
 
-std::string Facility::getType() const{
+std::string Facility::getType() const {
     return type;
 }
 
-int Facility::getX() const{
+int Facility::getX() const {
     return x;
 }
 
-int Facility::getY() const{
+int Facility::getY() const {
     return y;
 }
 
-int Facility::getNodeId() const{
+int Facility::getNodeId() const {
     return nodeId;
 }
 
-} // namespace project
-
-
+}  // namespace project

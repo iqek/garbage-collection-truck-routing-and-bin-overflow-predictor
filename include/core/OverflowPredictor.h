@@ -50,7 +50,7 @@ public:
 
     /**
      * @brief Calculates overflow risk score for routing decisions.
-     * 
+     *
      * Lower score = higher priority (more urgent).
      * @param bin The bin to evaluate.
      * @return Risk score (days to overflow, lower is more urgent).
@@ -64,4 +64,4 @@ public:
     void setCriticalThreshold(int threshold);
 };
 
-} // namespace project
+}  // namespace project

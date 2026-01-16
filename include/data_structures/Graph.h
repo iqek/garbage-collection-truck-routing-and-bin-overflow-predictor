@@ -18,9 +18,9 @@ namespace project {
  * for routing algorithms like Dijkstra's.
  */
 struct Edge {
-    int toNode;    ///< Index of the destination node the edge connects to.
-    int weight;    ///< The weight or distance of the edge.
-    
+    int toNode;  ///< Index of the destination node the edge connects to.
+    int weight;  ///< The weight or distance of the edge.
+
     Edge() : toNode(0), weight(0) {}
     Edge(int to, int w) : toNode(to), weight(w) {}
 };
@@ -29,10 +29,10 @@ struct Edge {
  * @brief Node in the pointer-based graph structure.
  */
 struct GraphNode {
-    int nodeId;                    ///< Node identifier
-    LinkedList<Edge> edges;        ///< Adjacency list of edges
-    GraphNode* next;               ///< Pointer to next node in the list
-    
+    int nodeId;              ///< Node identifier
+    LinkedList<Edge> edges;  ///< Adjacency list of edges
+    GraphNode* next;         ///< Pointer to next node in the list
+
     GraphNode() : nodeId(0), next(nullptr) {}
     GraphNode(int id) : nodeId(id), next(nullptr) {}
 };
@@ -45,8 +45,8 @@ struct GraphNode {
  */
 class Graph {
 private:
-    GraphNode* head;      ///< Head of the linked list of nodes
-    int nodeCount;        ///< Total number of nodes
+    GraphNode* head;  ///< Head of the linked list of nodes
+    int nodeCount;    ///< Total number of nodes
 
     /**
      * @brief Finds a node by its ID.
@@ -60,13 +60,13 @@ public:
      * @brief Constructs an empty graph.
      */
     Graph();
-    
+
     /**
      * @brief Constructs a graph with a specified number of nodes.
      * @param nodeCount The total number of nodes to create.
      */
     explicit Graph(int nodeCount);
-    
+
     /**
      * @brief Destroys the graph and releases memory.
      * @post Dynamically allocated memory for all nodes is deallocated.
@@ -107,7 +107,7 @@ public:
      * @pre `node` index must be valid (0 <= node < nodeCount).
      * @return Reference to the linked list containing `Edge` structures.
      */
-    LinkedList<Edge>& getAdjList(int node); 
+    LinkedList<Edge>& getAdjList(int node);
 
     /**
      * @brief Returns the adjacency list for a specific node (const version).
@@ -123,4 +123,4 @@ public:
     int getNodeCount() const;
 };
 
-} // namespace project
+}  // namespace project

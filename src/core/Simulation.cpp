@@ -6,88 +6,110 @@
  */
 
 #include "core/Simulation.h"
-#include <iostream>
+
 #include <climits>
+#include <iostream>
 
 namespace project {
 
 // Constructor
-Simulation::Simulation(Graph& graph, Facilities& facilities, int duration)                             
-    : graph(graph), facilities(facilities), planner(graph), currentTime(0), maxTime(duration),         // Simulation.h'ten gelen private ve public değişkenler. Tüm değerleri initalize ettik.
-      overflowCount(0), totalDistance(0), collectionsCompleted(0) {     
+Simulation::Simulation(Graph& graph, Facilities& facilities, int duration)
+    : graph(graph), facilities(facilities), planner(graph), currentTime(0),
+      maxTime(duration),  // Simulation.h'ten gelen private ve public değişkenler. Tüm değerleri
+                          // initalize ettik.
+      overflowCount(0), totalDistance(0), collectionsCompleted(0) {
+    // Store initial bin fills for reset and record as Day 0 history
+    int binCount = facilities.getBinCount();
+    initialBinFills = new int[binCount];
+    for (int i = 0; i < binCount; i++) {
+        initialBinFills[i] = facilities.getBin(i).getCurrentFill();
+        // Record initial fill as Day 0 in history
+        facilities.getBin(i).recordFillLevel(initialBinFills[i]);
+    }
+
+    // Store initial truck state
+    initialTruckLoad = facilities.getTruck().getCurrentLoad();
+    initialTruckNode = facilities.getTruck().getCurrentNode();
+}
+
+// Destructor
+Simulation::~Simulation() {
+    delete[] initialBinFills;
 }
 
 // step(), günlük yapılacak işlemler
 void Simulation::step() {
-    // 1. Update all bin fill levels
+    // 1. Update all bin fill levels (updateFill already records to history)
     for (int i = 0; i < facilities.getBinCount(); i++) {
-        facilities.getBin(i).updateFill();                                              //fill level'ı güncelle (tüm bin'ler için)
-        facilities.getBin(i).recordFillLevel(facilities.getBin(i).getCurrentFill());    // 2. Record fill history for predictions
+        facilities.getBin(i).updateFill();  // This calls recordFillLevel internally
     }
 
     // 2.1 Overflow check (başlamadan önce)
     checkOverflows();
 
     // 3. Plan collection route
-    // Save bin states 
+    // Save bin states
     int* savedFills = new int[facilities.getBinCount()];
-    for(int i = 0; i < facilities.getBinCount(); i++){
+    for (int i = 0; i < facilities.getBinCount(); i++) {
         savedFills[i] = facilities.getBin(i).getCurrentFill();
     }
     int savedTruckLoad = facilities.getTruck().getCurrentLoad();
     int savedTruckNode = facilities.getTruck().getCurrentNode();
-    Route plannedroute = planner.planRoute(facilities);     //.planRoute kullanarak "plannedroute" oluşturduk
+    Route plannedroute =
+        planner.planRoute(facilities);  //.planRoute kullanarak "plannedroute" oluşturduk
     // Restore bin states
-    for(int i = 0; i < facilities.getBinCount(); i++){
+    for (int i = 0; i < facilities.getBinCount(); i++) {
         int currentFill = facilities.getBin(i).getCurrentFill();
         int toRestore = savedFills[i] - currentFill;
-        if(toRestore != 0){
+        if (toRestore != 0) {
             // Manually restore the fill level
             facilities.getBin(i).setCurrentFill(savedFills[i]);
         }
     }
     delete[] savedFills;
-    
+
     // Restore truck state
     facilities.getTruck().setCurrentLoad(savedTruckLoad);
     facilities.getTruck().moveTo(savedTruckNode);
 
     // 4. Execute truck movements and collections
     Truck& truck = facilities.getTruck();
-    int currentLocation = truck.getCurrentNode();           //currentNode demek yerine currentLocation
+    int currentLocation = truck.getCurrentNode();  // currentNode demek yerine currentLocation
 
     for (int i = 0; i < plannedroute.getLength(); i++) {
         int binNum = plannedroute.getBinAt(i);
         Bin& bin = facilities.getBin(binNum);
 
         // 4.1 Bin'e git
-        int binLocation = bin.getNodeId();                  //binNode demek yerine binLocation
+        int binLocation = bin.getNodeId();  // binNode demek yerine binLocation
         int distance = planner.computeDistance(currentLocation, binLocation);
         if (distance != INT_MAX && distance > 0) {
             totalDistance += distance;
         }
         truck.moveTo(binLocation);
-        currentLocation = binLocation;              //binLocation'a geldik
+        currentLocation = binLocation;  // binLocation'a geldik
 
         // 4.2 Collect
         int garbageAmount = bin.getCurrentFill();
         int remainingCapacity = truck.getRemainingCapacity();
 
-        if (garbageAmount > remainingCapacity) {    //limiti aşıyorsa
-            garbageAmount = remainingCapacity;     //garbageAmount artık = remainingCapacity ki alınabilecek maksimum değer olsun ve bir sonraki if statement'ta toplanabilsin
+        if (garbageAmount > remainingCapacity) {  // limiti aşıyorsa
+            garbageAmount = remainingCapacity;    // garbageAmount artık = remainingCapacity ki
+                                                // alınabilecek maksimum değer olsun ve bir sonraki
+                                                // if statement'ta toplanabilsin
         }
 
-        if (garbageAmount > 0 && garbageAmount <= remainingCapacity) { //eğer atık var ve sınırı aşmıyor ise
-            truck.collect(garbageAmount);         //topla
-            bin.collect(garbageAmount);          //toplanan atık kadar bin'den çıkar
-            collectionsCompleted++;             //toplama sayacını arttır
+        if (garbageAmount > 0 &&
+            garbageAmount <= remainingCapacity) {  // eğer atık var ve sınırı aşmıyor ise
+            truck.collect(garbageAmount);          // topla
+            bin.collect(garbageAmount);            // toplanan atık kadar bin'den çıkar
+            collectionsCompleted++;                // toplama sayacını arttır
         }
 
         // 5. Handle disposal trips when truck is full
         if (truck.isFull()) {
-            
             int disposalLocation = planner.findNearestDisposal(currentLocation, facilities);
-            if (disposalLocation != -1) { //RoutePlanner.h'teki line 70'e referans
+            if (disposalLocation != -1) {  // RoutePlanner.h'teki line 70'e referans
                 distance = planner.computeDistance(currentLocation, disposalLocation);
                 if (distance != INT_MAX && distance > 0) {
                     totalDistance += distance;
@@ -114,7 +136,7 @@ void Simulation::step() {
         handleEmergencyReschedule();
     }
 
-    currentTime++;   //günlük mesai bitişi, günü bir arttır
+    currentTime++;  // günlük mesai bitişi, günü bir arttır
 }
 
 // Simülasyonu başlat
@@ -154,15 +176,15 @@ void Simulation::checkOverflows() {
 }
 
 // Emergency reschedule
-    /**
-     * (reference to Simulation.h) Handles dynamic rescheduling when critical bins detected.
-     * 
-     * Called when sensor data indicates unexpected rapid filling.
-     * Adjusts current route to prioritize critical bins.
-     */
+/**
+ * (reference to Simulation.h) Handles dynamic rescheduling when critical bins detected.
+ *
+ * Called when sensor data indicates unexpected rapid filling.
+ * Adjusts current route to prioritize critical bins.
+ */
 
 void Simulation::handleEmergencyReschedule() {
-    //Plan a new route
+    // Plan a new route
     Route emergencyRoute = planner.planRoute(facilities);
 
     Truck& truck = facilities.getTruck();
@@ -172,7 +194,7 @@ void Simulation::handleEmergencyReschedule() {
         int binIndex = emergencyRoute.getBinAt(i);
         Bin& bin = facilities.getBin(binIndex);
 
-        //Overflowing'leri bul ve topla
+        // Overflowing'leri bul ve topla
         if (bin.isOverflowing()) {
             int overflowingbinLocation = bin.getNodeId();
             int distance = planner.computeDistance(currentLocation, overflowingbinLocation);
@@ -229,9 +251,38 @@ void Simulation::printStatistics() const {
     std::cout << "Distance Traveled: " << totalDistance << " units\n";
     std::cout << "Overflow Event(s): " << overflowCount << std::endl;
     std::cout << "Collections Completed: " << collectionsCompleted << std::endl;
-    std::cout << "Average Distance per Day: " << (maxTime > 0 ? totalDistance / maxTime : 0) << " units\n";
-    std::cout << "Average Collections per Day: " << (maxTime > 0 ? collectionsCompleted / maxTime : 0)  << std::endl;
+    std::cout << "Average Distance per Day: " << (maxTime > 0 ? totalDistance / maxTime : 0)
+              << " units\n";
+    std::cout << "Average Collections per Day: "
+              << (maxTime > 0 ? collectionsCompleted / maxTime : 0) << std::endl;
     std::cout << "=====================================\n";
 }
 
-} // namespace project
+// Reset simulation to initial state
+void Simulation::reset() {
+    // Reset time
+    currentTime = 0;
+
+    // Reset performance counters
+    overflowCount = 0;
+    totalDistance = 0;
+    collectionsCompleted = 0;
+
+    // Reset all bins to initial fill levels and clear history
+    int binCount = facilities.getBinCount();
+    for (int i = 0; i < binCount; i++) {
+        Bin& bin = facilities.getBin(i);
+        bin.setCurrentFill(initialBinFills[i]);
+        // Clear fill history by recording initial fill 7 times
+        for (int j = 0; j < 7; j++) {
+            bin.recordFillLevel(initialBinFills[i]);
+        }
+    }
+
+    // Reset truck to initial state
+    Truck& truck = facilities.getTruck();
+    truck.setCurrentLoad(initialTruckLoad);
+    truck.moveTo(initialTruckNode);
+}
+
+}  // namespace project

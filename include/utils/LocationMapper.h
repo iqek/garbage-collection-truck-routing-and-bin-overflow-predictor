@@ -6,8 +6,9 @@
  */
 
 #pragma once
-#include <string>
 #include "../data_structures/HashTable.h"
+
+#include <string>
 
 namespace project {
 
@@ -17,8 +18,8 @@ namespace project {
  */
 class LocationMapper {
 private:
-    HashTable hashTable; ///< Internal hash table for storage
-    int nextNodeId;      ///< Counter for assigning unique IDs
+    HashTable hashTable;  ///< Internal hash table for storage
+    int nextNodeId;       ///< Counter for assigning unique IDs
 
 public:
     /**
@@ -61,4 +62,4 @@ public:
     void clear();
 };
 
-} // namespace project
+}  // namespace project

@@ -10,12 +10,10 @@
 namespace project {
 
 // Constructor
-LocationMapper::LocationMapper() : nextNodeId(0) {
-}
+LocationMapper::LocationMapper() : nextNodeId(0) {}
 
 // Destructor
-LocationMapper::~LocationMapper() {
-}
+LocationMapper::~LocationMapper() {}
 
 // Get or create node
 int LocationMapper::getOrCreateNode(const std::string& locationId) {
@@ -24,11 +22,11 @@ int LocationMapper::getOrCreateNode(const std::string& locationId) {
     if (existingNode != -1) {
         return existingNode;
     }
-    
+
     // Create new mapping
     int nodeId = nextNodeId++;
     hashTable.insert(locationId, nodeId);
-    
+
     return nodeId;
 }
 
@@ -53,4 +51,4 @@ void LocationMapper::clear() {
     nextNodeId = 0;
 }
 
-} // namespace project
+}  // namespace project

@@ -10,14 +10,13 @@
 namespace project {
 
 // Default constructor
-Graph::Graph() : head(nullptr), nodeCount(0) {
-}
+Graph::Graph() : head(nullptr), nodeCount(0) {}
 
 // Constructor with node count
 Graph::Graph(int count) : head(nullptr), nodeCount(count) {
-    for (int i = count - 1; i >= 0; i--) {    //create nodes in reverse order
+    for (int i = count - 1; i >= 0; i--) {  // create nodes in reverse order
         GraphNode* newNode = new GraphNode(i);
-        newNode->next = head;    //insert at front
+        newNode->next = head;  // insert at front
         head = newNode;
     }
 }
@@ -28,7 +27,7 @@ Graph::~Graph() {
     while (current != nullptr) {
         GraphNode* temp = current;
         current = current->next;
-        delete temp;    //free each node
+        delete temp;  // free each node
     }
 }
 
@@ -37,20 +36,20 @@ Graph::Graph(const Graph& other) : head(nullptr), nodeCount(other.nodeCount) {
     if (other.head == nullptr) {
         return;
     }
-    
+
     GraphNode* otherCurrent = other.head;
     GraphNode* prevNode = nullptr;
-    
+
     while (otherCurrent != nullptr) {
         GraphNode* newNode = new GraphNode(otherCurrent->nodeId);
-        newNode->edges = otherCurrent->edges;    //copy adjacency list
-        
+        newNode->edges = otherCurrent->edges;  // copy adjacency list
+
         if (prevNode == nullptr) {
-            head = newNode;    //first node
+            head = newNode;  // first node
         } else {
-            prevNode->next = newNode;    //link to previous
+            prevNode->next = newNode;  // link to previous
         }
-        
+
         prevNode = newNode;
         otherCurrent = otherCurrent->next;
     }
@@ -59,40 +58,40 @@ Graph::Graph(const Graph& other) : head(nullptr), nodeCount(other.nodeCount) {
 // Assignment operator
 Graph& Graph::operator=(const Graph& other) {
     if (this == &other) {
-        return *this;    //self-assignment check
+        return *this;  // self-assignment check
     }
-    
-    GraphNode* current = head;    //clean up existing nodes
+
+    GraphNode* current = head;  // clean up existing nodes
     while (current != nullptr) {
         GraphNode* temp = current;
         current = current->next;
         delete temp;
     }
-    
+
     head = nullptr;
     nodeCount = other.nodeCount;
-    
+
     if (other.head == nullptr) {
         return *this;
     }
-    
+
     GraphNode* otherCurrent = other.head;
     GraphNode* prevNode = nullptr;
-    
+
     while (otherCurrent != nullptr) {
         GraphNode* newNode = new GraphNode(otherCurrent->nodeId);
-        newNode->edges = otherCurrent->edges;    //copy adjacency list
-        
+        newNode->edges = otherCurrent->edges;  // copy adjacency list
+
         if (prevNode == nullptr) {
-            head = newNode;    //first node
+            head = newNode;  // first node
         } else {
-            prevNode->next = newNode;    //link to previous
+            prevNode->next = newNode;  // link to previous
         }
-        
+
         prevNode = newNode;
         otherCurrent = otherCurrent->next;
     }
-    
+
     return *this;
 }
 
@@ -101,11 +100,11 @@ GraphNode* Graph::findNode(int nodeId) const {
     GraphNode* current = head;
     while (current != nullptr) {
         if (current->nodeId == nodeId) {
-            return current;    //node found
+            return current;  // node found
         }
         current = current->next;
     }
-    return nullptr;    //not found
+    return nullptr;  // not found
 }
 
 // Adds a weighted edge between two nodes
@@ -113,13 +112,13 @@ void Graph::addEdge(int from, int to, int weight) {
     GraphNode* fromNode = findNode(from);
     if (fromNode != nullptr) {
         Edge edge(to, weight);
-        fromNode->edges.pushBack(edge);    //add edge to adjacency list
+        fromNode->edges.pushBack(edge);  // add edge to adjacency list
     }
 }
 
 // Adds a bidirectional edge
 void Graph::addBidirectionalEdge(int node1, int node2, int weight) {
-    addEdge(node1, node2, weight);    //add edge in both directions
+    addEdge(node1, node2, weight);  // add edge in both directions
     addEdge(node2, node1, weight);
 }
 
@@ -129,8 +128,8 @@ LinkedList<Edge>& Graph::getAdjList(int node) {
     if (graphNode != nullptr) {
         return graphNode->edges;
     }
-    
-    static LinkedList<Edge> emptyList;    //fallback to prevent crash
+
+    static LinkedList<Edge> emptyList;  // fallback to prevent crash
     return emptyList;
 }
 
@@ -140,8 +139,8 @@ const LinkedList<Edge>& Graph::getAdjList(int node) const {
     if (graphNode != nullptr) {
         return graphNode->edges;
     }
-    
-    static const LinkedList<Edge> emptyList;    //fallback
+
+    static const LinkedList<Edge> emptyList;  // fallback
     return emptyList;
 }
 
@@ -150,4 +149,4 @@ int Graph::getNodeCount() const {
     return nodeCount;
 }
 
-} // namespace project
+}  // namespace project

@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "data_structures/Graph.h"
 #include "core/Facilities.h"
-#include "data_structures/PriorityQueue.hpp"
 #include "core/OverflowPredictor.h"
 #include "core/Route.h"
+#include "data_structures/Graph.h"
+#include "data_structures/PriorityQueue.hpp"
 
 namespace project {
 
@@ -28,7 +28,7 @@ private:
 
     /**
      * @brief Calculates priority score for a bin.
-     * 
+     *
      * Combines overflow risk and distance into single score.
      * Lower score = higher priority.
      * @param bin Bin to evaluate.
@@ -46,7 +46,7 @@ public:
 
     /**
      * @brief Plans a complete collection route for the truck.
-     * 
+     *
      * Considers truck capacity, bin priorities, and disposal facility locations
      * to create an efficient multi-bin route.
      * @param facilities The system's physical facilities and assets.
@@ -56,7 +56,7 @@ public:
 
     /**
      * @brief Selects the next single bin for the truck to visit.
-     * 
+     *
      * Greedy selection based on priority score (overflow risk + distance).
      * @param facilities The system's physical facilities and assets.
      * @return The index of the selected bin. Returns -1 if no bin needs collection.
@@ -89,4 +89,4 @@ public:
     bool hasCriticalBins(const Facilities& facilities) const;
 };
 
-} // namespace project
+}  // namespace project

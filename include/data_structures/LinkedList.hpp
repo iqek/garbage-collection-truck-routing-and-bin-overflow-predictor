@@ -95,7 +95,8 @@ public:
      * @post The first node is removed, and its memory is freed.
      */
     void popFront() {
-        if (isEmpty()) return;
+        if (isEmpty())
+            return;
         Node* temp = head;
         head = head->next;
         if (head == nullptr) {
@@ -110,34 +111,26 @@ public:
      * @pre The list must not be empty (`isEmpty()` is false).
      * @return Reference to the front element of the list.
      */
-    T& front() {
-        return head->data;
-    }
+    T& front() { return head->data; }
 
     /**
      * @brief Returns a const reference to the first element.
      * @pre The list must not be empty.
      * @return Const reference to the front element.
      */
-    const T& front() const {
-        return head->data;
-    }
+    const T& front() const { return head->data; }
 
     /**
      * @brief Checks if the list is empty.
      * @return `true` if the list contains no elements, otherwise `false`.
      */
-    bool isEmpty() const {
-        return head == nullptr;
-    }
+    bool isEmpty() const { return head == nullptr; }
 
     /**
      * @brief Gets the number of elements in the list.
      * @return Size of the list.
      */
-    int size() const {
-        return count;
-    }
+    int size() const { return count; }
 
     /**
      * @brief Iterator support for range-based for loops.
@@ -145,17 +138,16 @@ public:
     class Iterator {
     private:
         Node* current;
+
     public:
         Iterator(Node* node) : current(node) {}
         T& operator*() { return current->data; }
         const T& operator*() const { return current->data; }
-        Iterator& operator++() { 
-            current = current->next; 
-            return *this; 
+        Iterator& operator++() {
+            current = current->next;
+            return *this;
         }
-        bool operator!=(const Iterator& other) const { 
-            return current != other.current; 
-        }
+        bool operator!=(const Iterator& other) const { return current != other.current; }
     };
 
     Iterator begin() { return Iterator(head); }
@@ -164,4 +156,4 @@ public:
     Iterator end() const { return Iterator(nullptr); }
 };
 
-} // namespace project
+}  // namespace project

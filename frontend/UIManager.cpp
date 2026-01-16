@@ -97,7 +97,10 @@ void UIManager::updateDisplay() {
     }
     
     refresh();
-    windows.refreshAll();
+    // Only refresh window panels in NORMAL mode
+    if (viewMode == ViewMode::NORMAL) {
+        windows.refreshAll();
+    }
 }
 
 void UIManager::handleInput() {
@@ -404,7 +407,7 @@ void UIManager::drawBinDetail() {
     int centerX = COLS / 2;
     int centerY = LINES / 2;
     int boxWidth = 40;
-    int boxHeight = 16;
+    int boxHeight = 18;  // Increased to fit 7 days of history
     int startX = centerX - boxWidth / 2;
     int startY = centerY - boxHeight / 2;
     
@@ -444,7 +447,59 @@ void UIManager::drawBinDetail() {
         attroff(COLOR_PAIR(colors.CRITICAL));
     }
     
-    mvprintw(startY + 7, startX + 2, "FILL HISTORY (7 days)");
+    mvprintw(startY + 7, startX + 2, "FILL HISTORY (Last 7 days)");
+    
+    // Draw fill history as a list with bars
+    const int* history = bin.getFillHistory();
+    int capacity = bin.getCapacity();
+    int currentDay = simulation.getTime();
+    
+    // Note: Initial state (Day 0) is now recorded in constructor
+    // Day 0 → history[0], Day 1 → history[1], etc. (with circular wraparound after 7 days)
+    
+    // Calculate which days to show (last 7 or fewer)
+    int startDay = (currentDay >= 6) ? currentDay - 6 : 0;
+    int endDay = currentDay;
+    
+    for (int i = 0; i < 7; i++) {
+        int row = startY + 8 + i;
+        int simDay = startDay + i;
+        
+        if (simDay <= endDay) {
+            // Day N's data is at history index N % 7
+            int actualIdx = simDay % 7;
+            int fillValue = history[actualIdx];
+            
+            // Draw day label and value
+            if (simDay == currentDay) {
+                attron(COLOR_PAIR(colors.WARNING) | A_BOLD);
+                mvprintw(row, startX + 2, "D%d*: %3d/%3d ", 
+                         simDay, fillValue, capacity);
+                attroff(COLOR_PAIR(colors.WARNING) | A_BOLD);
+            } else {
+                mvprintw(row, startX + 2, "D%-2d: %3d/%3d ", 
+                         simDay, fillValue, capacity);
+            }
+            
+            // Draw horizontal bar (15 chars wide)
+            int barWidth = 15;
+            int barFilled = (capacity > 0) ? (fillValue * barWidth) / capacity : 0;
+            if (barFilled > barWidth) barFilled = barWidth;
+            
+            printw("[");
+            for (int j = 0; j < barWidth; j++) {
+                if (j < barFilled) {
+                    printw("#");
+                } else {
+                    printw("-");
+                }
+            }
+            printw("]");
+        } else {
+            // Empty row for days that haven't happened yet
+            mvprintw(row, startX + 2, "                                ");
+        }
+    }
     
     mvprintw(startY + boxHeight - 2, startX + 2, "[Enter] Close  [ESC] Back");
     
@@ -452,29 +507,277 @@ void UIManager::drawBinDetail() {
 }
 
 void UIManager::drawFullMap() {
-    // Placeholder for full screen map
     werase(stdscr);
+    
+    // Draw header
     attron(COLOR_PAIR(colors.HEADER) | A_BOLD);
     mvprintw(0, 0, "FULL MAP VIEW - Press [ESC] to return");
     attroff(COLOR_PAIR(colors.HEADER) | A_BOLD);
+    
+    Facilities& facilities = simulation.getFacilities();
+    Truck& truck = facilities.getTruck();
+    
+    // Draw legend
+    int row = 2;
+    mvprintw(row++, 2, "Legend:");
+    attron(COLOR_PAIR(colors.SUCCESS));
+    mvprintw(row++, 4, "[D]   - Depot");
+    attroff(COLOR_PAIR(colors.SUCCESS));
+    
+    attron(COLOR_PAIR(colors.DANGER));
+    mvprintw(row++, 4, "[DS]  - Disposal Site");
+    attroff(COLOR_PAIR(colors.DANGER));
+    
+    attron(COLOR_PAIR(colors.INFO));
+    mvprintw(row++, 4, "[B#]  - Bin (# = bin number)");
+    attroff(COLOR_PAIR(colors.INFO));
+    
+    attron(COLOR_PAIR(colors.WARNING));
+    mvprintw(row++, 4, "[T]   - Truck");
+    attroff(COLOR_PAIR(colors.WARNING));
+    
+    mvprintw(row++, 4, "----  - Road connection");
+    
+    row += 2;
+    
+    // Draw city map (same as small map but larger)
+    mvprintw(row++, 10, "    D ---- B1");
+    mvprintw(row++, 10, "    |      |");
+    mvprintw(row++, 10, "    B2 - DS1");
+    mvprintw(row++, 10, "    |  /  |");
+    mvprintw(row++, 10, "    B3----B4");
+    mvprintw(row++, 10, "      \\");
+    mvprintw(row++, 10, "        B5");
+    
+    row += 2;
+    
+    // Draw facility details
+    mvprintw(row++, 2, "Facilities:");
+    Facility* facilityArray = facilities.getFacilities();
+    for (int i = 0; i < facilities.getFacilityCount(); i++) {
+        Facility& facility = facilityArray[i];
+        int colorPair = (facility.getType() == "depot") ? colors.SUCCESS : colors.DANGER;
+        attron(COLOR_PAIR(colorPair));
+        mvprintw(row++, 4, "%s - %s (Node %d)", 
+                 facility.getId().c_str(), 
+                 facility.getType().c_str(),
+                 facility.getNodeId());
+        attroff(COLOR_PAIR(colorPair));
+    }
+    
+    row += 1;
+    
+    // Draw bin details
+    mvprintw(row++, 2, "Bins:");
+    for (int i = 0; i < facilities.getBinCount(); i++) {
+        Bin& bin = facilities.getBin(i);
+        int fillPercent = getBinFillPercent(bin);
+        int colorPair = getBinColorPair(fillPercent);
+        
+        attron(COLOR_PAIR(colorPair));
+        mvprintw(row++, 4, "%s - %s (Node %d) [%d/%d] %d%%", 
+                 bin.getId().c_str(),
+                 bin.getLocation().c_str(),
+                 bin.getNodeId(),
+                 bin.getCurrentFill(),
+                 bin.getCapacity(),
+                 fillPercent);
+        attroff(COLOR_PAIR(colorPair));
+    }
+    
+    row += 1;
+    
+    // Draw truck details
+    mvprintw(row++, 2, "Truck:");
+    int loadPercent = (truck.getCurrentLoad() * 100) / truck.getCapacity();
+    attron(COLOR_PAIR(colors.WARNING));
+    mvprintw(row++, 4, "%s - Node %d [%d/%d] %d%%", 
+             truck.getId().c_str(),
+             truck.getCurrentNode(),
+             truck.getCurrentLoad(),
+             truck.getCapacity(),
+             loadPercent);
+    attroff(COLOR_PAIR(colors.WARNING));
+    
     refresh();
 }
 
 void UIManager::drawHistory() {
-    // Placeholder for history view
     werase(stdscr);
+    
+    // Draw header
     attron(COLOR_PAIR(colors.HEADER) | A_BOLD);
     mvprintw(0, 0, "SIMULATION HISTORY - Press [ESC] to return");
     attroff(COLOR_PAIR(colors.HEADER) | A_BOLD);
+    
+    Facilities& facilities = simulation.getFacilities();
+    int row = 2;
+    
+    // Simulation Progress
+    attron(COLOR_PAIR(colors.INFO) | A_BOLD);
+    mvprintw(row++, 2, "SIMULATION PROGRESS");
+    attroff(COLOR_PAIR(colors.INFO) | A_BOLD);
+    row++;
+    
+    mvprintw(row++, 4, "Current Day: %d / %d", simulation.getTime(), simulation.getMaxTime());
+    mvprintw(row++, 4, "Progress: [");
+    int progressWidth = 40;
+    int filled = (simulation.getTime() * progressWidth) / simulation.getMaxTime();
+    for (int i = 0; i < progressWidth; i++) {
+        if (i < filled) {
+            attron(COLOR_PAIR(colors.SUCCESS));
+            addch('=');
+            attroff(COLOR_PAIR(colors.SUCCESS));
+        } else {
+            addch('-');
+        }
+    }
+    printw("] %.1f%%", (simulation.getTime() * 100.0) / simulation.getMaxTime());
+    row += 2;
+    
+    // Performance Statistics
+    attron(COLOR_PAIR(colors.INFO) | A_BOLD);
+    mvprintw(row++, 2, "PERFORMANCE STATISTICS");
+    attroff(COLOR_PAIR(colors.INFO) | A_BOLD);
+    row++;
+    
+    mvprintw(row++, 4, "Total Distance Traveled: %d units", simulation.getTotalDistance());
+    mvprintw(row++, 4, "Collections Completed: %d", simulation.getCollectionsCompleted());
+    
+    int overflows = simulation.getOverflowCount();
+    if (overflows > 0) {
+        attron(COLOR_PAIR(colors.DANGER));
+        mvprintw(row++, 4, "Overflow Events: %d", overflows);
+        attroff(COLOR_PAIR(colors.DANGER));
+    } else {
+        attron(COLOR_PAIR(colors.SUCCESS));
+        mvprintw(row++, 4, "Overflow Events: 0 (Perfect!)");
+        attroff(COLOR_PAIR(colors.SUCCESS));
+    }
+    row += 2;
+    
+    // Current Bin Status
+    attron(COLOR_PAIR(colors.INFO) | A_BOLD);
+    mvprintw(row++, 2, "CURRENT BIN STATUS");
+    attroff(COLOR_PAIR(colors.INFO) | A_BOLD);
+    row++;
+    
+    for (int i = 0; i < facilities.getBinCount(); i++) {
+        Bin& bin = facilities.getBin(i);
+        int fillPercent = getBinFillPercent(bin);
+        int colorPair = getBinColorPair(fillPercent);
+        
+        attron(COLOR_PAIR(colorPair));
+        mvprintw(row++, 4, "%s: [%d/%d] %3d%% ", 
+                 bin.getId().c_str(),
+                 bin.getCurrentFill(),
+                 bin.getCapacity(),
+                 fillPercent);
+        
+        // Draw fill bar
+        int barWidth = 30;
+        printw("[");
+        int barFilled = (fillPercent * barWidth) / 100;
+        for (int j = 0; j < barWidth; j++) {
+            if (j < barFilled) {
+                addch('#');
+            } else {
+                addch('-');
+            }
+        }
+        printw("]");
+        attroff(COLOR_PAIR(colorPair));
+    }
+    
     refresh();
 }
 
 void UIManager::drawConfig() {
-    // Placeholder for config view
     werase(stdscr);
+    
+    // Draw header
     attron(COLOR_PAIR(colors.HEADER) | A_BOLD);
     mvprintw(0, 0, "CONFIGURATION - Press [ESC] to return");
     attroff(COLOR_PAIR(colors.HEADER) | A_BOLD);
+    
+    Facilities& facilities = simulation.getFacilities();
+    Truck& truck = facilities.getTruck();
+    
+    int row = 2;
+    
+    // Simulation Settings
+    attron(COLOR_PAIR(colors.INFO) | A_BOLD);
+    mvprintw(row++, 2, "SIMULATION SETTINGS");
+    attroff(COLOR_PAIR(colors.INFO) | A_BOLD);
+    row++;
+    
+    mvprintw(row++, 4, "Total Duration: %d days", simulation.getMaxTime());
+    mvprintw(row++, 4, "Current Day: %d", simulation.getTime());
+    mvprintw(row++, 4, "Simulation Speed: %.1fx", speedMultiplier);
+    row++;
+    
+    // Truck Configuration
+    attron(COLOR_PAIR(colors.INFO) | A_BOLD);
+    mvprintw(row++, 2, "TRUCK CONFIGURATION");
+    attroff(COLOR_PAIR(colors.INFO) | A_BOLD);
+    row++;
+    
+    mvprintw(row++, 4, "ID: %s", truck.getId().c_str());
+    mvprintw(row++, 4, "Capacity: %d units", truck.getCapacity());
+    mvprintw(row++, 4, "Now at Node: %d", truck.getCurrentNode());
+    row++;
+    
+    // Bin Configuration
+    attron(COLOR_PAIR(colors.INFO) | A_BOLD);
+    mvprintw(row++, 2, "BIN CONFIGURATION (%d bins)", facilities.getBinCount());
+    attroff(COLOR_PAIR(colors.INFO) | A_BOLD);
+    row++;
+    
+    mvprintw(row++, 4, "%-4s %-12s %-8s %-8s %-8s %-6s", 
+             "ID", "Location", "Capacity", "Initial", "FillRate", "Node");
+    mvprintw(row++, 4, "------------------------------------------------------------");
+    
+    for (int i = 0; i < facilities.getBinCount(); i++) {
+        Bin& bin = facilities.getBin(i);
+        
+        mvprintw(row++, 4, "%-4s %-12s %-8d %-8d %-8d %-6d",
+                 bin.getId().c_str(),
+                 bin.getLocation().c_str(),
+                 bin.getCapacity(),
+                 bin.getInitialFill(),
+                 bin.getFillRate(),
+                 bin.getNodeId());
+    }
+    
+    row += 2;
+    
+    // Facilities
+    attron(COLOR_PAIR(colors.INFO) | A_BOLD);
+    mvprintw(row++, 2, "FACILITIES (%d facilities)", facilities.getFacilityCount());
+    attroff(COLOR_PAIR(colors.INFO) | A_BOLD);
+    row++;
+    
+    Facility* facilityArray = facilities.getFacilities();
+    for (int i = 0; i < facilities.getFacilityCount(); i++) {
+        Facility& facility = facilityArray[i];
+        int colorPair = (facility.getType() == "depot") ? colors.SUCCESS : colors.DANGER;
+        attron(COLOR_PAIR(colorPair));
+        mvprintw(row++, 4, "%s (%s) - Node %d", 
+                 facility.getId().c_str(),
+                 facility.getType().c_str(),
+                 facility.getNodeId());
+        attroff(COLOR_PAIR(colorPair));
+    }
+    
+    row += 2;
+    
+    // Controls
+    attron(COLOR_PAIR(colors.WARNING));
+    mvprintw(row++, 2, "CONTROLS:");
+    attroff(COLOR_PAIR(colors.WARNING));
+    mvprintw(row++, 4, "[P] Play/Pause  [S] Step  [R] Reset  [+/-] Speed");
+    mvprintw(row++, 4, "[V] Full Map  [H] History  [C] Config  [Q] Quit");
+    
     refresh();
 }
 
@@ -519,8 +822,11 @@ void UIManager::stepSimulation() {
 }
 
 void UIManager::resetSimulation() {
-    // Note: This would require simulation reset functionality
-    setStatusMessage("Reset not yet implemented", 60);
+    simulation.reset();
+    state = SimulationState::PAUSED;
+    // Don't reset selectedBinIndex - keep user on the same bin they were viewing
+    binListScrollOffset = 0;
+    setStatusMessage("Simulation reset to initial state - Press [P] to start", 120);
 }
 
 int UIManager::getBinFillPercent(const Bin& bin) const {
